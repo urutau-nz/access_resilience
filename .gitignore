@@ -1,3 +1,16 @@
-/.git
 /data
+/.git
+.bash_history
 /venv
+pass.txt
+pass_email.txt
+NOTES.md
+.ftpconfig
+__pycache__
+*ini
+*.pdf
+*.gdoc
+src/test.py
+inequality_function_test.py
+*.ai
+*.pdf
