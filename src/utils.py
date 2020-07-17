@@ -4,7 +4,7 @@ General functions that support the project
 -
 '''
 # user defined variables
-state = 'wa'
+state = 'ch'
 from config import *
 db, context = cfg_init(state)
 
@@ -30,7 +30,7 @@ def import_csv(db):
     '''
     import a csv into the postgres db
     '''
-    elif state == 'wa':
+    if state == 'wa':
         file_name = '/homedirs/man112/access_inequality_index/data/usa/{}/{}/demo/demo.csv'.format(state, context['city_code'])
         county = '033'
     elif state == 'tx':
