@@ -103,7 +103,7 @@ def query_points(db, context):
     orig_df.drop('geom',axis=1,inplace=True)
     orig_df.drop_duplicates(inplace=True)
     # set index
-    orig_df = orig_df.set_index('SA12018_V1_00')
+    orig_df = orig_df.set_index('sa12018_v1')
 
     # get list of destination ids
     sql = "SELECT * FROM secondary_schools"
@@ -162,9 +162,9 @@ def requests_retry_session(retries=10, backoff_factor=0.1, status_forcelist=(500
 
 def add_column_demograph(con):
     '''
-    Add a useful SA12018_V1_00 column to join data with
+    Add a useful sa12018_v1 column to join data with
     '''
-    queries = ['ALTER TABLE demograph ADD COLUMN SA12018_V1_00 CHAR(15)',
+    queries = ['ALTER TABLE demograph ADD COLUMN sa12018_v1 CHAR(15)',
                 '']
 def execute_route_query(origxdest, orig_df, dest_df):
     # build query list:
