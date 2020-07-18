@@ -97,7 +97,7 @@ def query_points(db, context):
     # get list of all origin ids
     sql = "SELECT * FROM block"
     orig_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
-    orig_df = orig_df.to_crs(epsg=4326)
+    orig_df = orig_df.to_crs()
     orig_df['x'] = orig_df.geom.centroid.x
     orig_df['y'] = orig_df.geom.centroid.y
     # drop duplicates
@@ -109,7 +109,7 @@ def query_points(db, context):
     # get list of destination ids
     sql = "SELECT * FROM secondary_schools"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
-    dest_df = dest_df.to_crs(epsg=4326)
+    dest_df = dest_df.to_crs()
     dest_df = dest_df.set_index('id')
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
