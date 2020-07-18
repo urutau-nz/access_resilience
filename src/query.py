@@ -104,7 +104,7 @@ def query_points(db, context):
     orig_df.drop('geom',axis=1,inplace=True)
     orig_df.drop_duplicates(inplace=True)
     # set index
-    orig_df = orig_df.set_index('geoid10')
+    orig_df = orig_df.set_index('sa12018_v1')
 
     # get list of destination ids
     sql = "SELECT * FROM destinations"
