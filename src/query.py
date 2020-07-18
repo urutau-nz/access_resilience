@@ -58,23 +58,23 @@ def create_dest_table(db):
         files = '/homedirs/man112/access_inequality_index/data/usa/{}/{}/{}/{}_{}.shp'.format(state, context['city_code'], dest_type, state, dest_type)
         df_type = gpd.read_file('{}'.format(files))
         # df_type = pd.read_csv('data/destinations/' + dest_type + '_FL.csv', encoding = "ISO-8859-1", usecols = ['id','name','lat','lon'])
-        if df_type.crs['init'] != 'epsg:2193':
+        if df_type.crs['init'] != 'epsg:4269':
             # project into lat lon
-            df_type = df_type.to_crs({'init':'epsg:2193'})
+            df_type = df_type.to_crs({'init':'epsg:4269'})
         df_type['dest_type'] = dest_type
         gdf = gdf.append(df_type)
 
     # set a unique id for each destination
     gdf['id'] = range(len(gdf))
     # prepare for sql
-    gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=2193))
+    gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4269))
     #drop all columns except id, dest_type, and geom
     gdf = gdf[['id','dest_type','geom']]
     # set index
     gdf.set_index(['id','dest_type'], inplace=True)
 
     # export to sql
-    gdf.to_sql('destinations', engine, dtype={'geom': Geometry('POINT', srid= 2193)})
+    gdf.to_sql('destinations', engine, dtype={'geom': Geometry('POINT', srid= 4269)})
 
     # update indices
     cursor = con.cursor()
@@ -97,6 +97,7 @@ def query_points(db, context):
     # get list of all origin ids
     sql = "SELECT * FROM block"
     orig_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+    orig_df = orig_df.to_crs(epsg=4326)
     orig_df['x'] = orig_df.geom.centroid.x
     orig_df['y'] = orig_df.geom.centroid.y
     # drop duplicates
@@ -108,6 +109,7 @@ def query_points(db, context):
     # get list of destination ids
     sql = "SELECT * FROM secondary_schools"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+    dest_df = dest_df.to_crs(epsg=4326)
     dest_df = dest_df.set_index('id')
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
