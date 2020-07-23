@@ -107,7 +107,7 @@ def query_points(db, context):
     orig_df = orig_df.set_index('sa12018_v1')
 
     # get list of destination ids
-    sql = "SELECT * FROM secondary_schools"
+    sql = "SELECT * FROM destinations"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
     dest_df = dest_df.set_index('id')
     dest_df['lon'] = dest_df.geom.centroid.x
