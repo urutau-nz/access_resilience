@@ -2,11 +2,6 @@
 Init the database
 Query origins to dests in OSRM
 '''
-# user defined variables
-par = True
-par_frac = 0.9
-transport_mode = 'driving'
-
 import utils
 from config import *
 logger = logging.getLogger(__name__)
@@ -31,7 +26,10 @@ def main(state):
     db, context = cfg_init(state)
 
     # query the distances
-    query_points(db, context)
+    origxdest = query_points(db, context)
+
+    # add df to sql
+    write_to_postgres(origxdest, db, 'distance')
 
     # close the connection
     db['con'].close()
@@ -70,11 +68,21 @@ def query_points(db, context):
     # df of durations, distances, ids, and co-ordinates
 
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
+    return origxdest
 
-    # add df to sql
+def write_to_postgres(df, db, table_name):
+    ''' quickly write to a postgres database
+        from https://stackoverflow.com/a/47984180/5890574'''
     logger.info('Writing data to SQL')
-    write_to_postgres(origxdest, db, 'baseline_distance')
-    # origxdest.to_sql('distance_duration', con=db['engine'], if_exists='replace', index=False, dtype={"distance":Float(), "duration":Float(), 'id_dest':Integer()}, method='multi')
+    df.head(0).to_sql(table_name, db['engine'], if_exists='replace',index=False) #truncates the table
+
+    conn = db['engine'].raw_connection()
+    cur = conn.cursor()
+    output = io.StringIO()
+    df.to_csv(output, sep='\t', header=False, index=False)
+    output.seek(0)
+    cur.copy_from(output, table_name, null="") # null values become ''
+
     logger.info('Distances written successfully to SQL')
     logger.info('Updating indices on SQL')
     # update indices
@@ -88,19 +96,6 @@ def query_points(db, context):
     # commit to db
     db['con'].commit()
     logger.info('Query Complete')
-
-def write_to_postgres(df, db, table_name):
-    ''' quickly write to a postgres database
-        from https://stackoverflow.com/a/47984180/5890574'''
-
-    df.head(0).to_sql(table_name, db['engine'], if_exists='replace',index=False) #truncates the table
-
-    conn = db['engine'].raw_connection()
-    cur = conn.cursor()
-    output = io.StringIO()
-    df.to_csv(output, sep='\t', header=False, index=False)
-    output.seek(0)
-    cur.copy_from(output, table_name, null="") # null values become ''
     conn.commit()
 
 
@@ -109,7 +104,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
     # https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#table-service
 
     batch_limit = 10000
-
+    transport_mode = 'driving'
     dest_n = len(dest_df)
     orig_n = len(orig_df)
     orig_per_batch = int(batch_limit/dest_n)
@@ -152,12 +147,12 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         # append to list of queries
         query_list.append(query_string)
     # # Table Query OSRM in parallel
+    par_frac = 0.9
 
-    if par == True:
-        #define cpu usage
-        num_workers = np.int(mp.cpu_count() * par_frac)
-        #gets list of tuples which contain 1list of distances and 1list
-        results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in tqdm(query_list))
+    #define cpu usage
+    num_workers = np.int(mp.cpu_count() * par_frac)
+    #gets list of tuples which contain 1list of distances and 1list
+    results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in tqdm(query_list))
     # get the results in the right format
     #dists = [l for orig in results for l in orig[0]] was giving errors so i rewrote
     dists = [result for query in results for result in query]
