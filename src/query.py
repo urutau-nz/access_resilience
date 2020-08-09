@@ -13,11 +13,11 @@ import shapely
 from geoalchemy2 import Geometry, WKTElement
 import requests
 from sqlalchemy.types import Float, Integer
-if par == True:
-    import multiprocessing as mp
-    from joblib import Parallel, delayed
-    from requests.adapters import HTTPAdapter
-    from requests.packages.urllib3.util.retry import Retry
+
+import multiprocessing as mp
+from joblib import Parallel, delayed
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 def main(state):
     '''
