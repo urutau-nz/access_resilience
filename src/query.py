@@ -91,7 +91,7 @@ def write_to_postgres(df, db, table_name):
                 'CREATE INDEX "orig_idx" ON baseline_distance ("id_orig");'
                 ]
     for q in queries:
-        cursor.execute(q)
+        cur.execute(q)
 
     # commit to db
     db['con'].commit()
