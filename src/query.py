@@ -5,7 +5,7 @@ Query origins to dests in OSRM
 # user defined variables
 par = True
 par_frac = 0.9
-transport_mode = 'walking'#'driving'
+transport_mode = 'driving'
 
 import utils
 from config import *
@@ -30,63 +30,12 @@ def main(state):
     '''
     db, context = cfg_init(state)
 
-    # init the destination tables
-    #create_dest_table(db)
-
     # query the distances
     query_points(db, context)
 
     # close the connection
     db['con'].close()
     logger.info('Database connection closed')
-
-    # email completion notification
-    #utils.send_email(body='Querying {} complete'.format(context['city']))
-
-
-def create_dest_table(db):
-    '''
-    create a table with the destinations
-    '''
-    # db connections
-    con = db['con']
-    engine = db['engine']
-    # destinations and locations
-    types = ['supermarket', 'hospital']
-    # import the csv's
-    gdf = gpd.GeoDataFrame()
-    for dest_type in types:
-        files = '/homedirs/man112/access_inequality_index/data/usa/{}/{}/{}/{}_{}.shp'.format(state, context['city_code'], dest_type, state, dest_type)
-        df_type = gpd.read_file('{}'.format(files))
-        # df_type = pd.read_csv('data/destinations/' + dest_type + '_FL.csv', encoding = "ISO-8859-1", usecols = ['id','name','lat','lon'])
-        if df_type.crs['init'] != 'epsg:4269':
-            # project into lat lon
-            df_type = df_type.to_crs({'init':'epsg:4269'})
-        df_type['dest_type'] = dest_type
-        gdf = gdf.append(df_type)
-
-    # set a unique id for each destination
-    gdf['id'] = range(len(gdf))
-    # prepare for sql
-    gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4269))
-    #drop all columns except id, dest_type, and geom
-    gdf = gdf[['id','dest_type','geom']]
-    # set index
-    gdf.set_index(['id','dest_type'], inplace=True)
-
-    # export to sql
-    gdf.to_sql('destinations', engine, dtype={'geom': Geometry('POINT', srid= 4269)})
-
-    # update indices
-    cursor = con.cursor()
-    queries = ['CREATE INDEX "dest_id" ON destinations ("id");',
-            'CREATE INDEX "dest_type" ON destinations ("dest_type");']
-    for q in queries:
-        cursor.execute(q)
-
-    # commit to db
-    con.commit()
-
 
 def query_points(db, context):
     '''
@@ -98,6 +47,7 @@ def query_points(db, context):
     # get list of all origin ids
     sql = "SELECT * FROM block"
     orig_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+
     orig_df['x'] = orig_df.geom.centroid.x
     orig_df['y'] = orig_df.geom.centroid.y
     # drop duplicates
@@ -109,6 +59,7 @@ def query_points(db, context):
     # get list of destination ids
     sql = "SELECT * FROM destinations"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+
     dest_df = dest_df.set_index('id')
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
@@ -116,21 +67,20 @@ def query_points(db, context):
     # list of origxdest pairs
     origxdest = pd.DataFrame(list(itertools.product(orig_df.index, dest_df.index)), columns = ['id_orig','id_dest'])
     origxdest['distance'] = None
-    origxdest['duration'] = None
-
     # df of durations, distances, ids, and co-ordinates
+
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
 
     # add df to sql
     logger.info('Writing data to SQL')
-    write_to_postgres(origxdest, db, 'distance_duration')
+    write_to_postgres(origxdest, db, 'baseline_distance')
     # origxdest.to_sql('distance_duration', con=db['engine'], if_exists='replace', index=False, dtype={"distance":Float(), "duration":Float(), 'id_dest':Integer()}, method='multi')
     logger.info('Distances written successfully to SQL')
     logger.info('Updating indices on SQL')
     # update indices
     queries = [
-                'CREATE INDEX "dest_idx" ON distance_duration ("id_dest");',
-                'CREATE INDEX "orig_idx" ON distance_duration ("id_orig");'
+                'CREATE INDEX "dest_idx" ON baseline_distance ("id_dest");',
+                'CREATE INDEX "orig_idx" ON baseline_distance ("id_orig");'
                 ]
     for q in queries:
         cursor.execute(q)
@@ -170,6 +120,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
 
     # make a string of all the destination coordinates
     dest_string = ""
+    dest_df.reset_index(inplace=True, drop=True)
     for j in range(dest_n):
         #now add each dest in the string
         dest_string += str(dest_df['lon'][j]) + "," + str(dest_df['lat'][j]) + ";"
@@ -177,7 +128,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
     dest_string = dest_string[:-1]
 
     # options string
-    options_string_base = '?annotations=duration,distance'
+    options_string_base = '?annotations=distance' #'?annotations=duration,distance'
 
     # loop through the sets of
     orig_sets = [(i, min(i+orig_per_batch, orig_n)) for i in range(0,orig_n,orig_per_batch)]
@@ -200,30 +151,26 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         query_string = base_string + orig_string + dest_string + options_string
         # append to list of queries
         query_list.append(query_string)
-
     # # Table Query OSRM in parallel
+
     if par == True:
         #define cpu usage
         num_workers = np.int(mp.cpu_count() * par_frac)
         #gets list of tuples which contain 1list of distances and 1list
         results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in tqdm(query_list))
-
     # get the results in the right format
-    dists = [l for orig in results for l in orig[0]]
-    durs = [l for orig in results for l in orig[1]]
+    #dists = [l for orig in results for l in orig[0]] was giving errors so i rewrote
+    dists = [result for query in results for result in query]
     origxdest['distance'] = dists
-    origxdest['duration'] = durs
-
     return(origxdest)
 
 def req(query_string):
     response = requests.get(query_string).json()
     temp_dist = [item for sublist in response['distances'] for item in sublist]
-    temp_dur = [item for sublist in response['durations'] for item in sublist]
-    return temp_dist, temp_dur
+    return temp_dist
 
 
 if __name__ == "__main__":
-    state = input('State: ')
+    state = 'ch'#input('State: ')
     logger.info('query.py code invoked')
     main(state)

@@ -8,6 +8,7 @@ import pandas as pd
 import itertools
 # functions - geospatial
 import geopandas as gpd
+from geoalchemy2 import Geometry, WKTElement
 # functions - data management
 import pickle as pk
 import psycopg2
@@ -44,8 +45,6 @@ def cfg_init(state):
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6001'
         context['services'] = ['supermarket']
-
-    # SEATTLE
     elif state == 'wa':
         db['name'] = 'access_wa'
         context['city_code'] = 'sea'
@@ -53,8 +52,6 @@ def cfg_init(state):
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6004'
         context['services'] = ['supermarket', 'school', 'hospital', 'library']
-
-    # HOUSTON
     elif state == 'tx':
         db['name'] = 'access_tx'
         context['city_code'] = 'hou'
