@@ -7,3 +7,4 @@ def main(state):
     '''main'''
     db, context = cfg_init(state)
     origxdest = query_points(db, context)
+    
