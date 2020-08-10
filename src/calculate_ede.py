@@ -31,7 +31,7 @@ def kolm_pollak_ede(a, beta = None, kappa = None, weights = None):
         N = sum(weights) # for a weighted average
     ede = (-1 / kappa) * np.log(ede_sum / N)
     return(ede)
-    
+
 def kolm_pollak_index(a, beta = None, kappa = None, weights = None):
     '''returns the Kolm-Pollak Inequality Index'''
     if weights is None:

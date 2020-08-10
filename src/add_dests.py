@@ -35,9 +35,9 @@ def append_csv_dests(state):
     #convert to gdf and format to send to sql
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
     gdf.drop(['Latitude', 'Longitude'], axis=1, inplace=True)
-    gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4269))
-    gdf.crs = "EPSG:4269"
-    gdf.drop('geometry', 1, inplace=True)
+gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4269))
+gdf.crs = "EPSG:4269"
+gdf.drop('geometry', 1, inplace=True)
     gdf.to_sql('destinations', db['engine'], if_exists='append', index=False, dtype={'geom': Geometry(geometry_type='POINT', srid= 4269)})
 
 def append_shp_dest(state):
@@ -64,7 +64,7 @@ def append_shp_dest(state):
     gdf = gdf.to_crs('EPSG:4269')
     gdf.drop('geometry', axis=1, inplace=True)
     # export to sql
-    gdf.to_sql('medical_clinic', db['engine'], if_exists='replace', dtype={'geom': Geometry('POINT', srid= 4269)})
+    gdf.to_sql('block_bois', db['engine'], if_exists='replace', dtype={'geom': Geometry('POINT', srid= 4269)})
 
 def formatting old destinations table():
     'retrieving old destinations table and appending to it, formatting it and resending it to sql'
@@ -111,8 +111,3 @@ def formatting old destinations table():
     gdf1.sort_values(by=['dest_type', 'name'], inplace=True)
     gdf1.reset_index(inplace=True, drop=True)
     gdf1['id'] = list(range(len(gdf1)))
-
-
-
-state = input('State: ')
-append_csv_dests(state)

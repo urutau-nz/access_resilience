@@ -4,9 +4,10 @@ def main():
     state = 'ch'
     db, context = cfg_init(state)
     origxdest = pd.read_sql("SELECT * FROM baseline_distance", db['con'])
-    find_nearest_service(origxdest)
+    nearest = find_nearest_service(origxdest, db, context)
+    code.interact(local=locals())
 
-def find_nearest_service(distances):
+def find_nearest_service(distances, db, context):
     '''takes a distance matrix and returns a matrix of 1 origin per service
     paired with the nearest service to that origin'''
     db, context = cfg_init('ch')

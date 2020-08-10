@@ -21,6 +21,9 @@ import time
 from tqdm import tqdm
 #plotting
 from scipy.integrate import simps
+
+#taken straight from query.py
+
 # logging
 import logging
 logging.basicConfig(
