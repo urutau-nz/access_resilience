@@ -163,9 +163,3 @@ def req(query_string):
     response = requests.get(query_string).json()
     temp_dist = [item for sublist in response['distances'] for item in sublist]
     return temp_dist
-
-
-if __name__ == "__main__":
-    state = 'ch'#input('State: ')
-    logger.info('query.py code invoked')
-    main(state)
