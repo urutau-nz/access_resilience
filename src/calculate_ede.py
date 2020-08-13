@@ -15,6 +15,31 @@ Output:
 
 import numpy as np
 from scipy.integrate import simps
+from config import *
+
+def kp_ede(demo, nearest_service, context):
+    '''calculates an ede for each pop group for the given nearest_distance matrix'''
+    results_df = pd.DataFrame(columns=['ede', 'mean', 'dest_type', 'population_group'])
+    services = context['services']
+    #removes gid and median_age columns, we are only interested in population groups
+    pop_groups = demo.columns
+    pop_groups = pop_groups[1:]
+    pop_groups = pop_groups[np.arange(len(pop_groups))!=3]
+    for pop_group in pop_groups:
+        ede = []
+        average = []
+        for service in services:
+            service_subset = nearest_service.loc[nearest_service['dest_type'] == service]
+            distances = service_subset['distance']
+            demo_group = demo[pop_group].replace(['C'], 0).apply(lambda x: np.int64(x))
+            ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
+            average.append(distances.mean())
+        dict = {'ede':ede, 'mean':average, 'dest_type':services, 'population_group':pop_group}
+        df = pd.DataFrame(dict)
+        results_df = results_df.append(df, ignore_index=True)
+    results_df.sort_values(inplace=True, by=['dest_type', 'population_group'])
+    results_df.reset_index(inplace=True, drop=True)
+    return results_df
 
 def kolm_pollak_ede(a, beta = None, kappa = None, weights = None):
     '''returns the Kolm-Pollak EDE'''
