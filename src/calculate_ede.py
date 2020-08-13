@@ -33,7 +33,7 @@ def kp_ede(demo, nearest_service, context):
             distances = service_subset['distance']
             demo_group = demo[pop_group].replace(['C'], 0).apply(lambda x: np.int64(x))
             ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
-            average.append(distances.mean())
+            average.append(np.average(distances, weights=demo_group))
         dict = {'ede':ede, 'mean':average, 'dest_type':services, 'population_group':pop_group}
         df = pd.DataFrame(dict)
         results_df = results_df.append(df, ignore_index=True)
