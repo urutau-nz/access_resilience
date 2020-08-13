@@ -43,7 +43,6 @@ def kp_ede(demo, nearest_service, context):
 
 def kolm_pollak_ede(a, beta = None, kappa = None, weights = None):
     '''returns the Kolm-Pollak EDE'''
-    print(weights)
     a = np.asanyarray(a)
     if kappa is None:
         if beta is None:
