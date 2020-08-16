@@ -1,4 +1,5 @@
 /data
+/results
 /.git
 .bash_history
 /venv

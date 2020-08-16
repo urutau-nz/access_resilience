@@ -21,7 +21,10 @@ import time
 from tqdm import tqdm
 #plotting
 from scipy.integrate import simps
-
+import plotly
+import plotly.graph_objects as go
+from statsmodels.distributions.empirical_distribution import ECDF
+import matplotlib.pyplot as plt
 #taken straight from query.py
 
 # logging

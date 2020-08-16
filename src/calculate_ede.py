@@ -23,8 +23,8 @@ def kp_ede(demo, nearest_service, context):
     services = context['services']
     #removes gid and median_age columns, we are only interested in population groups
     pop_groups = demo.columns
-    pop_groups = pop_groups[1:]
-    pop_groups = pop_groups[np.arange(len(pop_groups))!=3]
+    index = [0, 2, 3, 4]
+    pop_groups = np.delete(pop_groups, index)
     for pop_group in pop_groups:
         ede = []
         average = []

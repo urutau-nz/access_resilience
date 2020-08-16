@@ -4,6 +4,8 @@ from query import *
 from calculate_ede import *
 from nearest_service import *
 from get_demo import *
+from plot_cdf import *
+
 
 def main_function(state):
     '''main'''
@@ -16,7 +18,10 @@ def main_function(state):
     demo, nearest_service = demographic_data(nearest_service, db, context)
     logger.info('calculating ede\'s')
     ede_df = kp_ede(demo, nearest_service, context)
-    code.interact(local=locals())
+    #ede_df.to_csv('results/baseline_ede.csv')
+    logger.info('plot boi')
+    plotting(nearest_service, demo, db, context)
+    #code.interact(local=locals())
 
 #if __name__ == "__main__":
 state = 'ch'#input('State: ')
