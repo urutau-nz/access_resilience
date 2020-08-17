@@ -53,9 +53,9 @@ def plot_path(lat, long, origin_point, destination_point):
                           'lon': long_center},
                           'zoom': 12})
     file_name = input('File Name: ')
-    fig.write_image("data/fig2.png")
+    fig.write_image("data/{}.png".format(file_name))
 
-lst = input('List of Coordinates: '')
+lst = input('List of Coordinates: ')
 lat = []
 long = []
 orig = lst[0]
