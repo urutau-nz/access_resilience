@@ -32,7 +32,7 @@ def main_function(state):
     demo, nearest_service = demographic_data(nearest_service, db, context)
     #ede_df = kp_ede(demo, nearest_service, context)
     #ede_df.to_csv('results/ede_after.csv')
-    #plotting(nearest_service, demo, db, context)
+    plotting(nearest_service, demo, db, context)
     #will need a new origxdest when roads are altered, for now this will suffice
 
     #code.interact(local=locals())

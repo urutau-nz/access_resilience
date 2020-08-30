@@ -61,7 +61,7 @@ def plotting(nearest_service, demo, db, context):
         #add spike lines
         fig.update_xaxes(showspikes=True)
         fig.update_yaxes(showspikes=True)
-        plotly.offline.plot(fig, filename='results/{}_high_liquefaction.html'.format(service))
+        plotly.offline.plot(fig, filename='results/{}_liquefaction_exposure.html'.format(service))
 
 
 #ecdf function
