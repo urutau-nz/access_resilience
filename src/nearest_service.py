@@ -6,12 +6,14 @@ def main():
     origxdest = pd.read_sql("SELECT * FROM baseline_distance", db['con'])
     nearest = find_nearest_service(origxdest, db, context)
 
-def find_nearest_service(distances, db, context):
+def find_nearest_service(distances, closed_ids, db, context):
     '''takes a distance matrix and returns a matrix of 1 origin per service
     paired with the nearest service to that origin'''
     con = db['con']
 
     dest_df = pd.read_sql("SELECT * FROM destinations", db['con'])
+    #remove destinations that are closed
+    dest_df = dest_df.loc[~dest_df['id'].isin(closed_ids)]
     services = context['services']
     # init the dataframe
     df = pd.DataFrame(columns = ['id_orig','distance','dest_type'])

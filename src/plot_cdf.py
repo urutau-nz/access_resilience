@@ -44,14 +44,24 @@ def plotting(nearest_service, demo, db, context):
         # Set title
         fig.update_layout(
             title_text="{} Access Distribution: {}".format(service, context['city']),
-            xaxis_title="Distance to nearest {} (km)".format(service),
+            xaxis_title="Distance to nearest {} (m)".format(service),
             yaxis_title="Percentage of Population (0-1)",
-            xaxis_domain=[0.05, 1.0]
+            xaxis_domain=[0.05, 1],
+            xaxis=dict(
+            range=[0,10000]
+            ),
+            legend=dict(
+            x=0.75,
+            y=0.25,
+            traceorder='normal',
+            font=dict(
+            size=20,),
+            ),
         )
         #add spike lines
         fig.update_xaxes(showspikes=True)
         fig.update_yaxes(showspikes=True)
-        plotly.offline.plot(fig, filename='results/{}_baseline.html'.format(service))
+        plotly.offline.plot(fig, filename='results/{}_high_liquefaction.html'.format(service))
 
 
 #ecdf function

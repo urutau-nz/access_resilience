@@ -4,7 +4,7 @@ Query origins to dests in OSRM
 '''
 import utils
 from config import *
-logger = logging.getLogger(__name__)
+
 import math
 import os.path
 import osgeo.ogr
@@ -33,7 +33,7 @@ def main(state):
 
     # close the connection
     db['con'].close()
-    logger.info('Database connection closed')
+
 
 def query_points(db, context):
     '''
@@ -73,7 +73,7 @@ def query_points(db, context):
 def write_to_postgres(df, db, table_name):
     ''' quickly write to a postgres database
         from https://stackoverflow.com/a/47984180/5890574'''
-    logger.info('Writing data to SQL')
+
     df.head(0).to_sql(table_name, db['engine'], if_exists='replace',index=False) #truncates the table
 
     conn = db['engine'].raw_connection()
@@ -83,8 +83,6 @@ def write_to_postgres(df, db, table_name):
     output.seek(0)
     cur.copy_from(output, table_name, null="") # null values become ''
 
-    logger.info('Distances written successfully to SQL')
-    logger.info('Updating indices on SQL')
     # update indices
     queries = [
                 'CREATE INDEX "dest_idx" ON baseline_distance ("id_dest");',
@@ -95,7 +93,7 @@ def write_to_postgres(df, db, table_name):
 
     # commit to db
     db['con'].commit()
-    logger.info('Query Complete')
+
     conn.commit()
 
 

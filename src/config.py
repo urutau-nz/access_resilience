@@ -23,12 +23,7 @@ import time
 from tqdm import tqdm
 #plotting
 from scipy.integrate import simps
-# logging
-import logging
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
+
 
 def cfg_init(state):
     # SQL connection
