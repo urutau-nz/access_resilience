@@ -51,7 +51,7 @@ def plot_path(lat, long, origin_point, destination_point):
                       mapbox = {
                           'center': {'lat': lat_center,
                           'lon': long_center},
-                          'zoom': 12})
+                          'zoom': 10})
     file_name = input('File Name: ')
     fig.write_image("data/{}.png".format(file_name))
 
