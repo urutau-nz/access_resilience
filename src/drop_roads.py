@@ -7,10 +7,10 @@ Save to a csv
 from config import *
 
 #import edges
-edges = gpd.read_file(r'data/edges.shp')
+edges = gpd.read_file(r'data/road_edges/edges.shp')
 
 #import hazard
-hazard = gpd.read_file(r'data/esl_aep1_slr150_Project.shp')
+#hazard = gpd.read_file(r'data/esl_aep1_slr150_Project.shp')
 
 #clip roads to hazards
 roads_effected = gpd.clip(edges, hazard)
@@ -30,7 +30,8 @@ df = df.astype(int)
 
 # set edge speeds
 df['edge_speed'] = 0
-df['edge_rate'] = 0
-df['junk'] = 'junk'
 
-df.to_csv(r'/homedirs/man112/osm_data/updates/updates1.csv', header=False, index=False)
+df.to_csv(r'/homedirs/man112/osm_data/updates/update.csv', header=False, index=False)
+
+
+# init_osrm.py/.sh
