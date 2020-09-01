@@ -4,7 +4,7 @@
 from config import *
 
 
-def dests_to_drop(exposure_df, db, context):
+def dests_to_drop(exposure_df, hazard_type, db, context):
     '''picks out dest ids that are affected by hazard'''
     closed_ids = []
     #set hypothetical damage level for each building
@@ -12,7 +12,12 @@ def dests_to_drop(exposure_df, db, context):
     exposure_df['damage'] = damage_level
     #if dmaage level is over these thresholds then it has to close
     exposure_level = ['low', 'med', 'high']
-    damage_threshold = [0.95, 0.75, 0.4] #this is the expected percentage of services to remain open in each respective zone
+    #this is the expected percentage of services to remain open in each respective zone
+    #it will be different for different hazards?
+    if hazard_type == 'tsunami':
+        damage_threshold = [0.8, 0.45, 0.05]
+    elif hazard_type == 'liquefaction':
+        damage_threshold = [0.95, 0.75, 0.4]
     for i in range(0, 3):
         to_shut = exposure_df.loc[(exposure_df['exposure'] == exposure_level[i]) & (exposure_df['damage'] > damage_threshold[i])]
         closed_ids.extend(to_shut['dest_id'].tolist())

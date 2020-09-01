@@ -25,10 +25,10 @@ def main_function(state):
     #ede_df.to_csv('results/ede_before.csv')
 
     #plotting(nearest_service, demo, db, context)
-    hazard_type = 'liquefaction'
+    hazard_type = 'tsunami'
     exposure_df = open_hazard(hazard_type, db, context)
 
-    dest_ids = dests_to_drop(exposure_df, db, context) #needs rework
+    dest_ids = dests_to_drop(exposure_df, hazard_type, db, context) #needs rework
     nearest_service = find_nearest_service(origxdest, dest_ids, db, context)
     demo, nearest_service = demographic_data(nearest_service, db, context)
     #ede_df = kp_ede(demo, nearest_service, context)
