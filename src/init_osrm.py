@@ -3,7 +3,7 @@ from config import *
 
 mode_dict = {'driving':'car','walking':'foot','cycling':'bicycle'}
 
-def main(state, mode):
+def main(state, mode=mode_dict[0]):
     ''' run the shell script that
     - removes the existing docker
     - downloads the osrm files
