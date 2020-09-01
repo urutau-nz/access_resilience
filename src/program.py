@@ -6,7 +6,7 @@ from nearest_service import *
 from get_demo import *
 from plot_cdf import *
 from initialise_hazard import *
-from drop_destinations import *
+from close_destinations import *
 
 def main_function(state):
     '''main'''
@@ -25,6 +25,7 @@ def main_function(state):
     #ede_df.to_csv('results/ede_before.csv')
 
     #plotting(nearest_service, demo, db, context)
+    hazard_type = 'liquefaction'
     exposure_df = open_hazard(hazard_type, db, context)
 
     dest_ids = dests_to_drop(exposure_df, db, context) #needs rework

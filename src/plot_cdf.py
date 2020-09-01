@@ -5,8 +5,9 @@ from config import *
 
 def plotting(nearest_service, demo, db, context):
     '''plots ecdf'''
-
+    #select only relevant columns
     demo = demo.drop(['gid', 'median_age'], axis=1)
+    #replace values that are'confidential'
     demo = demo.replace(['C'], 0).apply(lambda x: np.int64(x))
     services = nearest_service.dest_type.unique()
     for service in tqdm(services):
