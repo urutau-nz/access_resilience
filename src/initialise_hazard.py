@@ -35,7 +35,7 @@ def open_hazard(hazard_type, db, context):
         #get x,y point values of all dests
         dest_coords = [(x,y) for x, y in zip(dest_gdf.geom.x, dest_gdf.geom.y)]
         #find corresponding inundation depth for each dest
-        dest_gdf['inundation_depth'] = [x[0] for x in tsu.sample(coords)]
+        dest_gdf['inundation_depth'] = [x[0] for x in tsu.sample(dest_coords)]
         #low, medium, high catagories for discrete fragility curve
         bands = [(0, 0.5), (0.5, 2), (2, 1000)]
         exposure_level = ['low', 'med', 'high']

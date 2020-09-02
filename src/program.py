@@ -14,30 +14,31 @@ def main_function(state):
     db, context = cfg_init(state)
     #query origins and destinations
     #origxdest = query_points(db, context)
-    origxdest = pd.read_sql('SELECT * FROM baseline_distance', db['con'])
-    #find nearest_service
-    dest_ids = []
-    nearest_service = find_nearest_service(origxdest, dest_ids, db, context)
-    #retrieve demographic data, also refines nearest service to match number of rows as SA1's, due to one being in the sea.
-    demo, nearest_service = demographic_data(nearest_service, db, context)
-    #to calcualte edes
-    #ede_df = kp_ede(demo, nearest_service, context)
-    #ede_df.to_csv('results/ede_before.csv')
-
-    #plotting(nearest_service, demo, db, context)
+    #open baseline origxdest df
+    distance_matrix = pd.read_sql('SELECT * FROM baseline_distance', db['con'])
+    #intilise hazard, find dests exposed at each level
     hazard_type = 'tsunami'
     exposure_df = open_hazard(hazard_type, db, context)
+    nsim = 100
+    for i in tqdm(range(nsim)):
+        #close destinations
+        dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
+        #drop roads(?)
 
-    dest_ids = dests_to_drop(exposure_df, hazard_type, db, context) #needs rework
-    nearest_service = find_nearest_service(origxdest, dest_ids, db, context)
-    demo, nearest_service = demographic_data(nearest_service, db, context)
-    #ede_df = kp_ede(demo, nearest_service, context)
-    #ede_df.to_csv('results/ede_after.csv')
-    plotting(nearest_service, demo, db, context)
-    #will need a new origxdest when roads are altered, for now this will suffice
+        #requery
+        distance_matrix = query_points(dest_ids, db, context)
+        #find new nearest_service matrix
+        nearest_service = find_nearest_service(distance_matrix, dest_ids, db, context)
+        #how to save the data?
+    code.interact(local=locals())
 
-    #code.interact(local=locals())
 
 #if __name__ == "__main__":
 state = 'ch'#input('State: ')
 main_function(state)
+
+#calculate ede's
+#ede_df = kp_ede(demo, nearest_service, context)
+#ede_df.to_csv('results/ede_after.csv')
+
+#plotting(nearest_service, demo, db, context)
