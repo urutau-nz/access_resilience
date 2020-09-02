@@ -33,6 +33,7 @@ def find_nearest_service(distances, closed_ids, db, context):
         df = df.append(df_min, ignore_index=True)
     #sorts by id_orig
     df.sort_values(by=['id_orig', 'dest_type'], inplace=True)
+    df.reset_index(inplace=True, drop=True)
     # add df to sql, if it exists it will be replaced
     return df
 

@@ -17,7 +17,7 @@ import numpy as np
 from scipy.integrate import simps
 from config import *
 
-def kp_ede(demo, nearest_service, context):
+def kp_ede_main(demo, nearest_service, context):
     '''calculates an ede for each pop group for the given nearest_distance matrix'''
     results_df = pd.DataFrame(columns=['ede', 'mean', 'dest_type', 'population_group'])
     services = context['services']

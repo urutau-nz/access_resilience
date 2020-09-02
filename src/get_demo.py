@@ -1,7 +1,7 @@
 from config import *
 
 def demographic_data(df, db, context):
-    '''returns the demographic data with blocks that are common with input df
+    '''returns the demographic data with blocks that are common with input df (so df can be nearest_service or distance matrix)
     Removes any rows from input df that do not have census data (these are usually in the ocean)'''
     #open census data for all of nz
     census_data = pd.read_sql("SELECT * FROM census_18", db['con'])
