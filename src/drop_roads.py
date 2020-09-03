@@ -10,7 +10,7 @@ from config import *
 edges = gpd.read_file(r'data/road_edges/edges.shp')
 
 #import hazard
-#hazard = gpd.read_file(r'data/esl_aep1_slr150_Project.shp')
+hazard = gpd.read_file(r'data/esl_aep1_slr150_Project.shp')
 
 #clip roads to hazards
 roads_effected = gpd.clip(edges, hazard)
@@ -35,3 +35,6 @@ df.to_csv(r'/homedirs/man112/osm_data/updates/update.csv', header=False, index=F
 
 
 # init_osrm.py/.sh
+
+
+# re query 

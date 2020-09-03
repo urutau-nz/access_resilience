@@ -15,51 +15,28 @@ psql monte_christchurch -h 132.181.102.2 -p 5001 -U postgres -W
 ```
 
 
-# How to drop roads in OSRM
-
-1. Using OSMNX in python, enter the following to get a shapefile of nodes and road edges:
-```
-import osmnx as ox
-#Get OSM network from a grid of co-ords
-G = ox.graph_from_bbox(north, south, east, west, network_type='drive', simplify=False) # N/S/E/W = N/S/E/W most point
-# Save file
-ox.save_graph_shapefile(G, file_path)
-```
-2. Create a csv file of edges to change the traffic speed on. This will be done by overlaying a hazard to the new edge shapefile and creating a list of all the 'from' and 'to' OSM IDs asscociated with each edge. Your update.csv will look something like this:
-```
-from_osmid, to_osmid, new_speed(km/h)
-to_osmid, from_osmid, new_speed(km/h)
-```
-Make sure you reverse each id pair you enter so that the speed is changed in both directions on the road
-
-3. Set up the docker (Using NZ example and port 6015), on the server the update.csv file is within osm_data/upates/.
-```
-docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-extract -p /opt/car.lua /data/new-zealand-latest.osm.pbf
-docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-partition /data/new-zealand-latest.osrm
-docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-customize /data/new-zealand-latest.osrm --segment-speed-file /data/updates/update.csv
-docker run --name nz_test -t -i -p 6015:5000 -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-routed --algorithm mld /data/new-zealand-latest.osrm
-```
-4. Query the new OSRM network
-
-
 # Setting up the query
 
-Download routing data from: http://download.geofabrik.de/north-america.html, as osm.pbf by typing in osm_data folder on server, wget 'download link'
+1. Get latest OSM data. Type the following into the linux server. This will save the OSM.pbf file into your current directory
 
+```
+wget http://download.geofabrik.de/ #find specific location on link
+```
 
-Set up Docker
-
+2. Set up the docker container. Type the following into linux:
+```
 docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-extract -p /opt/car.lua /data/florida-latest.osm.pbf
 docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-partition /data/florida-latest.osrm
 docker run -t -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-customize /data/florida-latest.osrm
 docker run --name osrm-fl -t -i -p 6012:5000 -v /homedirs/man112/osm_data:/data osrm/osrm-backend osrm-routed --algorithm mld /data/florida-latest.osrm
+```
 
 
-Download County Shapefile from https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2010&layergroup=Blocks
+3. Download County Shapefile
 
-Download the city boundary shapefile from the city website
+4. Download the city boundary shapefile from the city website
 
-Overlap (TOOL:intersect) boundary and county shapefiles (After they've been projected on 4269, TOOL: Project) and save the overlap as block as a shapefile (TOOL: Feature to shapefile)
+5. Overlap (TOOL:intersect) boundary and county shapefiles (After they've been projected on 4269, TOOL: Project) and save the overlap as block as a shapefile (TOOL: Feature to shapefile)
 
 Make database in SQL and ready it for gis
   CREATE DATABASE name;
