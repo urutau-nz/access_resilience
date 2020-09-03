@@ -35,7 +35,7 @@ def main(state):
     db['con'].close()
 
 
-def query_points(db, context):
+def query_points(closed_ids, db, context):
     '''
     query OSRM for distances between origins and destinations
     '''
@@ -58,10 +58,10 @@ def query_points(db, context):
     sql = "SELECT * FROM destinations"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
+    dest_df = dest_df.loc[~dest_df['id'].isin(closed_ids)]
     dest_df = dest_df.set_index('id')
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
-
     # list of origxdest pairs
     origxdest = pd.DataFrame(list(itertools.product(orig_df.index, dest_df.index)), columns = ['id_orig','id_dest'])
     origxdest['distance'] = None
@@ -150,7 +150,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
     #define cpu usage
     num_workers = np.int(mp.cpu_count() * par_frac)
     #gets list of tuples which contain 1list of distances and 1list
-    results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in tqdm(query_list))
+    results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in query_list)
     # get the results in the right format
     #dists = [l for orig in results for l in orig[0]] was giving errors so i rewrote
     dists = [result for query in results for result in query]

@@ -4,24 +4,24 @@
 from config import *
 
 
-def dests_to_drop(exposure_df, db, context):
+def dests_to_drop(exposure_df, hazard_type, db, context):
     '''picks out dest ids that are affected by hazard'''
     closed_ids = []
     #set hypothetical damage level for each building
-    exposure_df['damage'] = np.random.random_sample(exposure_df.shape[0])
+    damage_level = np.random.uniform(size=len(exposure_df))
+    exposure_df['damage'] = damage_level
     #if dmaage level is over these thresholds then it has to close
     exposure_level = ['low', 'med', 'high']
-    damage_threshold = [0.95, 0.5, 0.05]
+    #this is the expected percentage of services to remain open in each respective zone
+    #it will be different for different hazards?
+    if hazard_type == 'tsunami':
+        damage_threshold = [0.8, 0.45, 0.05]
+    elif hazard_type == 'liquefaction':
+        damage_threshold = [0.95, 0.75, 0.4]
     for i in range(0, 3):
         to_shut = exposure_df.loc[(exposure_df['exposure'] == exposure_level[i]) & (exposure_df['damage'] > damage_threshold[i])]
         closed_ids.extend(to_shut['dest_id'].tolist())
-
+    #this excludes the downtown 'destination', which is not really relevant for our investigations
+    if 0 not in closed_ids:
+        closed_ids.append(0)
     return closed_ids
-
-
-
-'''
-    low medium high
-p = 0.05 0.5  0.95
-just choose a value from np.random and then if its smaller than threshold close the dest?
-'''

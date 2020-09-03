@@ -1,7 +1,7 @@
 from config import *
 
 def demographic_data(df, db, context):
-    '''returns the demographic data with blocks that are common with input df
+    '''returns the demographic data with blocks that are common with input df (so df can be nearest_service or distance matrix)
     Removes any rows from input df that do not have census data (these are usually in the ocean)'''
     #open census data for all of nz
     census_data = pd.read_sql("SELECT * FROM census_18", db['con'])
@@ -15,13 +15,16 @@ def demographic_data(df, db, context):
     sorted_demo.sort_values(by=['gid'], inplace=True)
     sorted_demo.reset_index(inplace=True, drop=True)
 
-    #remove any rows in nearest_service (called df here) that dont have census data
-    if len(sorted_demo) < len(df):
-        to_drop = []
-        for value in df['id_orig']:
-           if len(sorted_demo.loc[sorted_demo['gid'] == value]) == 0:
-               to_drop.append(value)
-        df = df.loc[~df['id_orig'].isin(to_drop)]
-
     df.sort_values(['id_orig', 'dest_type'], inplace=True)
-    return sorted_demo, df
+    return sorted_demo
+
+
+#removes any rows in nearest_service (called df here) that dont have census data. More useful to just copy and paste this and then take out the block(s)
+#if len(sorted_demo) < len(df):
+#    to_drop = []
+#    for value in df['id_orig']:
+#       if len(sorted_demo.loc[sorted_demo['gid'] == value]) == 0:
+#           to_drop.append(value)
+#    df = df.loc[~df['id_orig'].isin(to_drop)]
+
+#need to remove 7029868 orig_id

@@ -23,7 +23,7 @@ def find_nearest_service(distances, closed_ids, db, context):
     # block ids
     id_orig = np.unique(distances.id_orig)
     # loop services
-    for i in tqdm(range(len(services))):
+    for i in range(len(services)):
         service = services[i]
         dest_ids = dest_df.loc[dest_df['dest_type'] == service]
         df_min = nearest_distance(distances, dest_ids)
@@ -33,6 +33,7 @@ def find_nearest_service(distances, closed_ids, db, context):
         df = df.append(df_min, ignore_index=True)
     #sorts by id_orig
     df.sort_values(by=['id_orig', 'dest_type'], inplace=True)
+    df.reset_index(inplace=True, drop=True)
     # add df to sql, if it exists it will be replaced
     return df
 
