@@ -25,9 +25,8 @@ from tqdm import tqdm
 #plotting
 from scipy.integrate import simps
 import plotly
-#disable false positive warnings
+#disable false positive warning, specifically: A value is trying to be set on a copy of a slice from a DataFrame.
 pd.options.mode.chained_assignment = None  # default='warn'
-
 
 def cfg_init(state):
     # SQL connection
@@ -44,9 +43,7 @@ def cfg_init(state):
         context['city'] = 'christchurch'
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6001'
-        context['services'] = ['fire_station', 'hospital', 'library',
-       'medical_clinic', 'petrol_station', 'pharmacy', 'police_station',
-       'primary_school', 'secondary_school', 'supermarket']
+        context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # SEATTLE
     elif state == 'wa':
         db['name'] = 'access_wa'

@@ -12,14 +12,18 @@ def main_function(state):
     '''main'''
     #initialise config
     db, context = cfg_init(state)
-    #open baseline origxdest df
+    #open baseline origxdest df and nearest service #definately would be faster to save and open these, should make an initilise function?
     dest_ids = []
-    distance_matrix = pd.read_sql('SELECT * FROM baseline_distance', db['con'])
+    baseline_distance = query_points(dest_ids, db, context)
+    baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
     hazard_type = 'tsunami'
     exposure_df = open_hazard(hazard_type, db, context)
     nearest_matrix = pd.DataFrame(columns=['id_orig', 'distance', 'dest_type', 'sim_num'])
-    nsim = 1
+    #open demographic data
+    demo = demographic_data(baseline_nearest, db, context)
+    #number of iterations for the simulation
+    nsim = 3
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
@@ -33,6 +37,11 @@ def main_function(state):
         nearest_service['sim_num'] = i
         #saving data
         nearest_matrix = pd.concat([nearest_matrix, nearest_service], ignore_index=True)
+
+
+    #plots
+    plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type)
+
 
     #having a gander at some results
     demo = demographic_data(nearest_service, db, context) #doesn't matter which nearest service. its just used to find the blocks
