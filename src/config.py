@@ -42,7 +42,7 @@ def cfg_init(state):
         context['city_code'] = 'chc'
         context['city'] = 'christchurch'
         # url to the osrm routing machine
-        context['osrm_url'] = 'http://localhost:6001'
+        context['osrm_url'] = 'http://localhost:6010'
         context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # SEATTLE
     elif state == 'wa':
@@ -59,13 +59,14 @@ def cfg_init(state):
         context['city'] = 'Houston'
         context['osrm_url'] = 'http://localhost:6006'
         context['services'] = ['supermarket']
-    elif state == 'sim_ch':
-        db['name'] = 'monte_christchurch'
-        context['city_code'] = 'chc'
-        context['city'] = 'christchurch'
-        # url to the osrm routing machine
-        context['osrm_url'] = 'http://localhost:6010'
-        context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
+    # elif state == 'sim_ch':
+    #     db['name'] = 'monte_christchurch'
+    #     context['state'] = 'new-zealand'
+    #     context['city_code'] = 'chc'
+    #     context['city'] = 'christchurch'
+    #     # url to the osrm routing machine
+    #     context['osrm_url'] = 'http://localhost:6010'
+    #     context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # connect to database
     db['engine'] = create_engine('postgresql+psycopg2://postgres:' + db['passw'] + '@' + db['host'] + '/' + db['name'] + '?port=' + db['port'])
     db['address'] = "host=" + db['host'] + " dbname=" + db['name'] + " user=postgres password='"+ db['passw'] + "' port=" + db['port']
