@@ -47,7 +47,7 @@ def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''
 
     if hazard_type == 'liquefaction':
-        filename = '/homedirs/dak55/monte_christchurch/data/hazards/liquefaction_vulnerability.shp'
+        filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
         hazard = gpd.read_file(filename)
         #exclude unnecessary columns
         hazard = hazard[['Liq_Cat', 'geometry']]
@@ -58,6 +58,6 @@ def open_hazard(hazard_type, db, context):
 
     elif hazard_type == 'tsunami':
         #open raster file
-        hazard = rio.open('/homedirs/dak55/monte_christchurch/data/hazards/tsunami.tif')
+        hazard = rio.open('/homedirs/dak55/monte_christchurch/data/christchurch/hazard/tsunami.tif')
 
     return(hazard)
