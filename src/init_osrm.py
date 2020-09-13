@@ -3,7 +3,7 @@ from config import *
 
 mode_dict = {'driving':'car','walking':'foot','cycling':'bicycle'}
 
-def main(state, mode=mode_dict[0]):
+def main(sim, state, mode=mode_dict[0]):
     ''' run the shell script that
     - removes the existing docker
     - downloads the osrm files
@@ -16,9 +16,13 @@ def main(state, mode=mode_dict[0]):
     transport_mode = mode_dict[mode]
     directory = '/homedirs/man112/osm_data'
 
-    subprocess.check_call(['/bin/bash', 'init_osrm.sh', state_name, port, transport_mode, directory, state])
+    if sim == True:
+        subprocess.check_call(['/bin/bash', 'init_osrm_sim.sh', state_name, port, transport_mode, directory, state])
+    elif sim == False:
+        subprocess.check_call(['/bin/bash', 'init_osrm.sh', state_name, port, transport_mode, directory, state])
 
 
-if __name__ == "__main__":
-    state = input('State: ')
-    main(state)
+
+# if __name__ == "__main__":
+#     state = input('State: ')
+#     main(state)

@@ -7,11 +7,16 @@ from get_demo import *
 from plot_cdf import *
 from initialise_hazard import *
 from close_destinations import *
+from drop_roads import *
+from init_osrm import *
 
 def main_function(state):
     '''main'''
     #initialise config
     db, context = cfg_init(state)
+    # reset osrm network
+    sim = False
+    init_osrm(sim, state)
     #open baseline origxdest df and nearest service #definately would be faster to save and open these, should make an initilise function?
     dest_ids = []
     baseline_distance = query_points(dest_ids, db, context)
@@ -28,7 +33,7 @@ def main_function(state):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
         #drop roads(?)
-
+        close_rd(state, hazard_type, db, context)
         #requery
         distance_matrix = query_points(dest_ids, db, context)
         #find new nearest_service matrix
