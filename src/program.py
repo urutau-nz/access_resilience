@@ -5,7 +5,7 @@ from calculate_ede import *
 from nearest_service import *
 from get_demo import *
 from plot_cdf import *
-from initialise_hazard import *
+import initialise_hazard
 from close_destinations import *
 from drop_roads import *
 import init_osrm
@@ -24,7 +24,7 @@ def main_function(state):
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
     hazard_type = 'tsunami'
-    exposure_df = open_hazard(hazard_type, db, context)
+    exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     nearest_matrix = pd.DataFrame(columns=['id_orig', 'distance', 'dest_type', 'sim_num'])
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
@@ -33,7 +33,7 @@ def main_function(state):
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
-        #drop roads(?)
+        #drop roads
         close_rd(state, hazard_type, db, context)
         #requery
         distance_matrix = query_points(dest_ids, db, context)
