@@ -17,9 +17,9 @@ def main(sim, state, context):
     directory = '/homedirs/man112/osm_data'
 
     if sim == True:
-        subprocess.check_call(['/bin/bash', 'init_osrm_sim.sh', state_name, port, transport_mode, directory, state])
+        subprocess.Popen(['/bin/bash', 'init_osrm_sim.sh', state_name, port, transport_mode, directory, state])
     elif sim == False:
-        subprocess.check_call(['/bin/bash', 'init_osrm.sh', state_name, port, transport_mode, directory, state])
+        subprocess.Popen(['/bin/bash', 'init_osrm.sh', state_name, port, transport_mode, directory, state])
 
 
 
