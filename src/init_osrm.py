@@ -19,7 +19,7 @@ def main(sim, state, context):
     if sim == True:
         subprocess.Popen(['/bin/bash', '/homedirs/man112/monte_christchurch/src/init_osrm_sim.sh', state_name, port, transport_mode, directory, state])
     elif sim == False:
-        subprocess.Popen(['/bin/bash', 'init_osrm.sh', state_name, port, transport_mode, directory, state])
+        subprocess.Popen(['/bin/bash', '/homedirs/man112/monte_christchurch/src/init_osrm.sh', state_name, port, transport_mode, directory, state])
 
 
 
