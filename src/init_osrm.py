@@ -3,7 +3,7 @@ from config import *
 
 mode_dict = {'driving':'car','walking':'foot','cycling':'bicycle'}
 
-def main(sim, state, mode=mode_dict[0]):
+def main(sim, state):
     ''' run the shell script that
     - removes the existing docker
     - downloads the osrm files
@@ -13,7 +13,7 @@ def main(sim, state, mode=mode_dict[0]):
 
     state_name = context['state']
     port = context['port']
-    transport_mode = mode_dict[mode]
+    transport_mode = 'car' #mode_dict[mode]
     directory = '/homedirs/man112/osm_data'
 
     if sim == True:
