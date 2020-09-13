@@ -8,7 +8,7 @@ from plot_cdf import *
 from initialise_hazard import *
 from close_destinations import *
 from drop_roads import *
-from init_osrm import *
+from init_osrm.py import *
 
 def main_function(state):
     '''main'''
