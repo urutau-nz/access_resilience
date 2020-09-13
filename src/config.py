@@ -39,6 +39,7 @@ def cfg_init(state):
     # CHRISTCHURCH
     if state == 'ch':
         db['name'] = 'monte_christchurch'
+        context['state'] = 'new-zealand'
         context['city_code'] = 'chc'
         context['city'] = 'christchurch'
         # url to the osrm routing machine
