@@ -11,7 +11,7 @@ def main(sim, state):
     '''
     context = cfg_init(state)[1]
 
-    state_name = context['state']
+    state_name = state
     port = context['port']
     transport_mode = 'car' #mode_dict[mode]
     directory = '/homedirs/man112/osm_data'
