@@ -5,7 +5,7 @@ Save to a csv
 '''
 
 from config import *
-from init_osrm import *
+import init_osrm
 
 def close_rd(state, hazard_type, db, context):
     #import edges
@@ -38,7 +38,7 @@ def close_rd(state, hazard_type, db, context):
 
     # init_osrm.py/.sh
     sim = True
-    init_osrm.main(sim, state)
+    init_osrm.main(sim, state, context)
 
     # re query
 

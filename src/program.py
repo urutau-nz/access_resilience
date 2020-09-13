@@ -16,7 +16,7 @@ def main_function(state):
     db, context = cfg_init(state)
     # reset osrm network
     sim = False
-    init_osrm.main(sim, state)
+    init_osrm.main(sim, state, context)
     #open baseline origxdest df and nearest service #definately would be faster to save and open these, should make an initilise function?
     dest_ids = []
     baseline_distance = query_points(dest_ids, db, context)
