@@ -46,7 +46,7 @@ def cfg_init(state):
         context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # SEATTLE
     elif state == 'wa':
-        db['name'] = 'access_wa'
+        db['name'] = 'seadf'
         context['city_code'] = 'sea'
         context['city'] = 'seattle'
         # url to the osrm routing machine
@@ -54,7 +54,7 @@ def cfg_init(state):
         context['services'] = ['supermarket', 'school', 'hospital', 'library']
     # HOUSTON
     elif state == 'tx':
-        db['name'] = 'access_tx'
+        db['name'] = 'housim'
         context['city_code'] = 'hou'
         context['city'] = 'Houston'
         context['osrm_url'] = 'http://localhost:6006'

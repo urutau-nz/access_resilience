@@ -45,15 +45,23 @@ def append_shp_dest(state):
 gdf = gpd.GeoDataFrame()
 dests = ['library']
 names = ['library_chc.shp']
-for i in range(0, len(dests)):
-    files = '/homedirs/dak55/resilience_equity/data/census/{}'.format(names[i])
-    df_type = gpd.read_file('{}'.format(files))
-    df_type['dest_type'] = dests[i]
-    df_type.sort_values(inplace=True, by=['COMMON_NAM'])
-    df_type['id'] = list(range(len(df_type)))
-    df_type = df_type[['id', 'dest_type', 'COMMON_NAM', 'geometry']]
-    df_type = df_type.rename(columns={'COMMON_NAM':'name'})
-    gdf = gdf.append(df_type)
+
+files = '/homedirs/dak55/monte_christchurch/data/seattle/destinations/primary_schools.shp'
+df_type = gpd.read_file('{}'.format(files))
+df_type.sort_values(inplace=True, by=['COMMON_NAM'])
+df_type['id'] = list(range(len(df_type)))
+df_type['dest_type'] = 'primary_school'
+df_type = df_type[['id', 'dest_type', 'NAME', 'geometry']]
+df_type = df_type.rename(columns={'NAME':'name'})
+
+files = '/homedirs/dak55/monte_christchurch/data/seattle/destinations/supermarket.shp'
+df_type = gpd.read_file('{}'.format(files))
+df_type.sort_values(inplace=True, by=['Name'])
+df_type['id'] = list(range(len(df_type)))
+df_type['dest_type'] = 'supermarket'
+df_type = df_type[['id', 'dest_type', 'Name', 'geometry']]
+df_type = df_type.rename(columns={'Name':'name'})
+gdf = gdf.append(df_type)
 
 
 
@@ -64,7 +72,7 @@ gdf['geom'] = gdf['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4269))
 gdf = gdf.to_crs('EPSG:4269')
 gdf.drop('geometry', axis=1, inplace=True)
     # export to sql
-gdf.to_sql('library', db['engine'], if_exists='replace', dtype={'geom': Geometry('POINT', srid= 4269)})
+gdf.to_sql('dests_part3', db['engine'], if_exists='replace', dtype={'geom': Geometry('POINT', srid= 4269)})
 
 def formatting old destinations table():
     'retrieving old destinations table and appending to it, formatting it and resending it to sql'
@@ -76,23 +84,51 @@ gdf_old.crs = "EPSG:4269"
 gdf_old.drop(['geom'], axis=1, inplace=True)
 gdf_old = gdf_old.rename(columns={'geom1':'geom'})
 
-    #gdf_old formatting
-    gdf_old = gdf_old.append(gdf)
 
-gdf_old.drop_duplicates(inplace=True)
-gdf_old.sort_values(by=['dest_type', 'name'], inplace=True)
-gdf_old.reset_index(inplace=True, drop=True)
-gdf_old['id'] = list(range(len(gdf_old)))
-    gdf_old = gdf_old[['id', 'dest_type', 'name', 'geom']]
 
-    gdf_old.to_sql('dest_final', db['engine'], if_exists='replace', dtype={'geom': Geometry('POINT', srid= 4269)})
+db = dict()
+db['passw'] = open('pass.txt', 'r').read().strip('\n')
+db['host'] = '132.181.102.2'
+db['port'] = '5001'
+# city information
+context = dict()
+db['name'] = 'access_wa'
+context['city_code'] = 'sea'
+context['city'] = 'seattle'
+# url to the osrm routing machine
+context['osrm_url'] = 'http://localhost:6004'
+context['services'] = ['supermarket', 'school', 'hospital', 'library']
+db['engine'] = create_engine('postgresql+psycopg2://postgres:' + db['passw'] + '@' + db['host'] + '/' + db['name'] + '?port=' + db['port'])
+db['address'] = "host=" + db['host'] + " dbname=" + db['name'] + " user=postgres password='"+ db['passw'] + "' port=" + db['port']
+db['con'] = psycopg2.connect(db['address'])
 
-        #random
-gdf_old = gpd.GeoDataFrame.from_postgis("SELECT * FROM destinations", db['con'], geom_col='geom')
-gdf_old['geom'] = gdf_old['geom'].apply(lambda x: WKTElement(x.wkt, srid=4269))
-gdf_old.crs = "EPSG:4269"
-gdf_old.to_sql('test', db['engine'], if_exists='append', index=False, dtype={'geom': Geometry('POINT', srid= 4269)})
+orig = gpd.GeoDataFrame.from_postgis("SELECT * FROM block", db['con'], geom_col='geom')
+dest = gpd.GeoDataFrame.from_postgis("SELECT * FROM destinations", db['con'], geom_col='geom')
 
-    gdf1.sort_values(by=['dest_type', 'name'], inplace=True)
-    gdf1.reset_index(inplace=True, drop=True)
-    gdf1['id'] = list(range(len(gdf1)))
+# prepare for sql
+orig['geom1'] = orig['geom'].apply(lambda x: WKTElement(x.wkt, srid=4269))
+orig = orig.to_crs('EPSG:4269')
+orig.drop('geom1', axis=1, inplace=True)
+
+dest['geom1'] = dest['geom'].apply(lambda x: WKTElement(x.wkt, srid=4269))
+dest = dest.to_crs('EPSG:4269')
+dest.drop('geom1', axis=1, inplace=True)
+
+db = dict()
+db['passw'] = open('pass.txt', 'r').read().strip('\n')
+db['host'] = '132.181.102.2'
+db['port'] = '5001'
+# city information
+context = dict()
+db['name'] = 'seadf'
+context['city_code'] = 'sea'
+context['city'] = 'seattle'
+# url to the osrm routing machine
+context['osrm_url'] = 'http://localhost:6004'
+context['services'] = ['supermarket', 'school', 'hospital', 'library']
+db['engine'] = create_engine('postgresql+psycopg2://postgres:' + db['passw'] + '@' + db['host'] + '/' + db['name'] + '?port=' + db['port'])
+db['address'] = "host=" + db['host'] + " dbname=" + db['name'] + " user=postgres password='"+ db['passw'] + "' port=" + db['port']
+db['con'] = psycopg2.connect(db['address'])
+
+orig.to_sql('block1', db['engine'])
+dest.to_sql('dest1', db['engine'], dtype={'geom': Geometry('POINT', srid= 4269)})

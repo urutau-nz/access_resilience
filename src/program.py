@@ -38,7 +38,6 @@ def main_function(state):
         #saving data
         nearest_matrix = pd.concat([nearest_matrix, nearest_service], ignore_index=True)
 
-
     #plots
     plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type)
 

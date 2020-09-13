@@ -8,7 +8,7 @@ def open_hazard(hazard_type, db, context):
     exposure_df = pd.DataFrame(columns={'dest_id', 'exposure'})
 
     if hazard_type == 'liquefaction':
-        filename = '/homedirs/dak55/monte_christchurch/data/hazards/liquefaction_vulnerability.shp'
+        filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
         hazard = gpd.read_file(filename)
         #exclude unnecessary columns
         hazard = hazard[['Liq_Cat', 'geometry']]
@@ -31,7 +31,7 @@ def open_hazard(hazard_type, db, context):
 
     elif hazard_type == 'tsunami':
         #open raster file
-        tsu = rio.open('/homedirs/dak55/monte_christchurch/data/hazards/tsunami.tif')
+        tsu = rio.open('/homedirs/dak55/monte_christchurch/data/christchurch/hazard/tsunami/tsunami.tif')
         #get x,y point values of all dests
         dest_coords = [(x,y) for x, y in zip(dest_gdf.geom.x, dest_gdf.geom.y)]
         #find corresponding inundation depth for each dest
