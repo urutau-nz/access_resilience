@@ -1,4 +1,4 @@
- '''this is intended to be run during each iteration so it returns a new set of ids'''
+'''this is intended to be run during each iteration so it returns a new set of ids'''
 #open up dest df in gdf format (possibly pass this to function so we only have to open it once)
 #then return a list of dest ids to ignore in next simulation, change nearest distance function to include this.
 from config import *
