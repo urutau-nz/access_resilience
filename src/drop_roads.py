@@ -78,7 +78,7 @@ def open_hazard(hazard_type, db, context):
         #get x,y point values of all dests
         road_coords = [(x,y) for x, y in zip(edges.centroid.x, edges.centroid.y)]
         #find corresponding inundation depth for each dest
-        edges['inundation_depth'] = [x[0] for x in tsu.sample(road_coords)]
+        edges['inundation_depth'] = [x[0] for x in hazard.sample(road_coords)]
         #low, medium, high catagories for discrete fragility curve
         bands = [(0, 0.5), (0.5, 2), (2, 1000)]
         exposure_level = ['low', 'med', 'high']
