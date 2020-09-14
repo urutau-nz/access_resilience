@@ -7,7 +7,7 @@ Save to a csv
 from config import *
 import init_osrm
 
-def close_rd(exposed_roads, state, hazard_type, db, context):=
+def close_rd(exposed_roads, state, hazard_type, db, context):
     #set hypothetical damage level for each building
     damage_level = np.random.uniform(size=len(exposed_roads))
     exposed_roads['damage'] = damage_level
