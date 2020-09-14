@@ -7,7 +7,7 @@ from get_demo import *
 from plot_cdf import *
 import initialise_hazard
 from close_destinations import *
-from drop_roads import *
+import drop_roads
 import init_osrm
 
 def main_function(state):
@@ -25,6 +25,9 @@ def main_function(state):
     #intilise hazard, df to save and find dests exposed at each fragility level
     hazard_type = 'tsunami'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
+    # get gpd df of roads with inundation depths and damage bands
+    exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
+    #
     nearest_matrix = pd.DataFrame(columns=['id_orig', 'distance', 'dest_type', 'sim_num'])
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
@@ -34,7 +37,7 @@ def main_function(state):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
         #drop roads
-        close_rd(state, hazard_type, db, context)
+        drop_roads.close_rd(exposed_roads, state, hazard_type, db, context)
         #requery
         distance_matrix = query_points(dest_ids, db, context)
         #find new nearest_service matrix
