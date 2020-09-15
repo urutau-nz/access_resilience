@@ -68,8 +68,14 @@ def open_hazard(hazard_type, db, context):
         #exclude unnecessary columns
         hazard = hazard[['Liq_Cat', 'geometry']]
         #catagorize all exposure as no, low, medium or high
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'Medium Liquefaction Vulnerability')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'Low Liquefaction Vulnerability')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'low') # this could be med?
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'low') # we should get a new category for this
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
+        #set up possible states
+        edges = gpd.sjoin(edges, hazard, how="left", op='within')
+        edges['Liq_Cat'] = edges['Liq_Cat'].fillna('low')
 
 
     elif hazard_type == 'tsunami':
