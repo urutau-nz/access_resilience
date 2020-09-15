@@ -75,7 +75,7 @@ def open_hazard(hazard_type, db, context):
         hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
         #set up possible states
         edges = gpd.sjoin(edges, hazard, how="left", op='within')
-        edges['Liq_Cat'] = edges['Liq_Cat'].fillna('low')
+        edges['exposure'] = edges['Liq_Cat'].fillna('low')
 
 
     elif hazard_type == 'tsunami':
