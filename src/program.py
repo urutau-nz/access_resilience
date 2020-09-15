@@ -23,7 +23,7 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'tsunami'
+    hazard_type = 'liquefaction' #'tsunami'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
@@ -32,7 +32,7 @@ def main_function(state):
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
     #number of iterations for the simulation
-    nsim = 50
+    nsim = 5
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
