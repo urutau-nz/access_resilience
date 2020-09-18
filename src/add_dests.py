@@ -19,8 +19,8 @@ def append_csv_dests(state):
     '''opens and appends new dest'''
     #initialize db connection
     db, context = cfg_init(state)
-    filename = '/homedirs/dak55/resilience_equity/data/census/secondary_school_chc.csv'
-    df = pd.read_csv(filename, encoding = "ISO-8859-1", skiprows=15)
+filename = '/homedirs/dak55/monte_christchurch/data/seattle/demograph/demo_sea.csv'
+df = pd.read_csv(filename, encoding = "ISO-8859-1")
 
         #extraact and format data so it is the same form as destinations
     df = df[['Org Name', 'Latitude', 'Longitude']]

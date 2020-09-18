@@ -51,9 +51,13 @@ def query_points(closed_ids, db, context):
     # drop duplicates
     orig_df.drop('geom',axis=1,inplace=True)
     orig_df.drop_duplicates(inplace=True)
-    # set index
-    orig_df = orig_df.set_index('sa12018_v1')
-
+    # set index (different format for different census blocks)
+    if context['country'] == 'nz':
+        orig_df.sort_values(by=['sa12018_v1'], inplace=True)
+        orig_df = orig_df.set_index('sa12018_v1')
+    elif context['country'] == 'usa':
+        orig_df = orig_df.set_index('geoid10')
+        orig_df.sort_values(by=['geoid10'], inplace=True)
     # get list of destination ids
     sql = "SELECT * FROM destinations"
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
@@ -122,7 +126,6 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
 
     # options string
     options_string_base = '?annotations=distance' #'?annotations=duration,distance'
-
     # loop through the sets of
     orig_sets = [(i, min(i+orig_per_batch, orig_n)) for i in range(0,orig_n,orig_per_batch)]
 

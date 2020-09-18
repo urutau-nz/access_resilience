@@ -23,13 +23,13 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'tsunami'
+    hazard_type = 'liquefaction'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     nearest_matrix = pd.DataFrame(columns=['id_orig', 'distance', 'dest_type', 'sim_num'])
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
     #number of iterations for the simulation
-    nsim = 3
+    nsim = 5
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
@@ -49,7 +49,7 @@ def main_function(state):
 
 
     #having a gander at some results
-    demo = demographic_data(nearest_service, db, context) #doesn't matter which nearest service. its just used to find the blocks
+    #update something horribly wrong is going on here
     ede_matrix = pd.DataFrame()
     for j in nearest_matrix.sim_num.unique():
         subset = nearest_matrix.loc[nearest_matrix['sim_num'] == j]
@@ -69,7 +69,7 @@ def main_function(state):
 
 
 #if __name__ == "__main__":
-state = 'ch'#input('State: ')
+state = 'wa'#input('State: ')
 main_function(state)
 
 #calculate ede's

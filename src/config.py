@@ -42,6 +42,7 @@ def cfg_init(state):
         context['state'] = 'new-zealand'
         context['city_code'] = 'chc'
         context['city'] = 'christchurch'
+        context['country'] = 'nz'
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6010'
         context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
@@ -50,9 +51,11 @@ def cfg_init(state):
         db['name'] = 'seadf'
         context['city_code'] = 'sea'
         context['city'] = 'seattle'
+        context['country'] = 'usa'
+        context['state'] = 'washington'
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6004'
-        context['services'] = ['supermarket', 'school', 'hospital', 'library']
+        context['services'] = ['supermarket', 'primary_school']
     # HOUSTON
     elif state == 'tx':
         db['name'] = 'housim'
@@ -60,6 +63,8 @@ def cfg_init(state):
         context['city'] = 'Houston'
         context['osrm_url'] = 'http://localhost:6006'
         context['services'] = ['supermarket']
+        context['country'] = 'usa'
+        context['state'] = 'texas'
     # elif state == 'sim_ch':
     #     db['name'] = 'monte_christchurch'
     #     context['state'] = 'new-zealand'

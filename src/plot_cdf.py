@@ -3,14 +3,14 @@ import utils
 from config import *
 
 
-def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, pop_group='population'):
+def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, pop_group='total'):
     '''plots ecdf'''
-
-    #possible need to sort dfs and dmeo by orig_id, should already have been done?
-    #select only relevant columns (NZ census)
-    demo = demo.drop(['gid', 'median_age'], axis=1)
-    #replace values that are'confidential'
-    demo = demo.replace(['C'], 0).apply(lambda x: np.int64(x))
+    #remove rows with 0 population from each df
+    zero_pop = demo.loc[demo['total'] == 0]
+    zero_pop_id = zero_pop['id_orig'].tolist()
+    baseline_nearest = baseline_nearest[~baseline_nearest['id_orig'].isin(zero_pop_id)]
+    nearest_matrix = nearest_matrix[~nearest_matrix['id_orig'].isin(zero_pop_id)]
+    demo = demo[~demo['id_orig'].isin(zero_pop_id)]
     #get list of different services
     services = context['services']
     for service in services:
@@ -21,12 +21,12 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
         hist_upper = []
         hist_lower = []
         for i in range(len(baseline)):
-            hist_baseline = hist_baseline + [baseline.distance.iloc[i]]*demo.population.iloc[i]
+            hist_baseline = hist_baseline + [baseline['distance'].iloc[i]]*demo[pop_group].iloc[i]
             id = baseline.id_orig.iloc[i] #if we end up closing origins add in an if clause to avoid errors?
             dist_subset = sim.distance.loc[sim['id_orig'] == id]
-            hist_mean = hist_mean + [dist_subset.mean()]*demo.population.iloc[i]
-            hist_upper = hist_upper + [dist_subset.quantile(0.05)]*demo.population.iloc[i]
-            hist_lower = hist_lower + [dist_subset.quantile(0.95)]*demo.population.iloc[i]
+            hist_mean = hist_mean + [dist_subset.mean()]*demo[pop_group].iloc[i]
+            hist_upper = hist_upper + [dist_subset.quantile(0.05)]*demo[pop_group].iloc[i]
+            hist_lower = hist_lower + [dist_subset.quantile(0.95)]*demo[pop_group].iloc[i]
         # Initialize figure
         fig = go.Figure()
         # Add Traces

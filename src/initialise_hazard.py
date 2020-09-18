@@ -6,20 +6,38 @@ def open_hazard(hazard_type, db, context):
     sql = "SELECT * FROM destinations"
     dest_gdf = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
     exposure_df = pd.DataFrame(columns={'dest_id', 'exposure'})
-
+    #shapefile format is different for each city, need to make a common format
     if hazard_type == 'liquefaction':
-        filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
-        hazard = gpd.read_file(filename)
-        #exclude unnecessary columns
-        hazard = hazard[['Liq_Cat', 'geometry']]
-        #catagorize all exposure as no, low, medium or high
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'Medium Liquefaction Vulnerability')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'Low Liquefaction Vulnerability')
+        if context['city'] == 'christchurch':
+            filename = '/homedirs/dak55/monte_christchurch/data/{}/hazard/liquefaction_vulnerability.shp'.format(context['city'])
+            hazard = gpd.read_file(filename)
+            #exclude unnecessary columns
+            hazard = hazard[['Liq_Cat', 'geometry']]
+            #catagorize all exposure as no, low, medium or high
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible', 'Medium Liquefaction Vulnerability'], 'med')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability'], 'low')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+            #change name of column to generalise
+            hazard.rename(columns={'Liq_Cat':'exposure_catagory'}, inplace=True)
+
+        elif context['city'] == 'seattle':
+            filename = '/homedirs/dak55/monte_christchurch/data/{}/hazard/liquefaction_susceptibility_2.shp'.format(context['city'])
+            hazard = gpd.read_file(filename)
+            #exclude unnecessary columns
+            hazard = hazard[['LIQUEFAC_1', 'geometry']]
+            #catagorize all exposure as no, low, medium or high
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate', 'moderate to high'], 'med')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low to low'], 'low')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
+            #change name of column to generalise
+
+            hazard.rename(columns={'LIQUEFAC_1':'exposure_catagory'}, inplace=True)
+
         #set up possible states
-        string_name = ['Low Liquefaction Vulnerability', 'Medium Liquefaction Vulnerability', 'High Liquefaction Vulnerability']
         exposure_level = ['low', 'med', 'high']
+        #determine which exposure level each destination is in
         for i in range(0, 3):
-            exposure = hazard.loc[hazard['Liq_Cat'] == '{}'.format(string_name[i])]
+            exposure = hazard.loc[hazard['exposure_catagory'] == '{}'.format(exposure_level[i])]
             exposed_dests = gpd.clip(dest_gdf, exposure)
             ids = exposed_dests['id']
             #formats for append
