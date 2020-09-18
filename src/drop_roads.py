@@ -7,15 +7,29 @@ Save to a csv
 from config import *
 import init_osrm
 
-def close_rd(state, hazard_type, db, context):
-    #import edges
-    edges = gpd.read_file(r'data/road_edges/edges.shp')
+def close_rd(exposed_roads, state, hazard_type, db, context):
+    #set hypothetical damage level for each building
+    damage_level = np.random.uniform(size=len(exposed_roads))
+    exposed_roads['damage'] = damage_level
+    exposure_level = ['low', 'med', 'high']
 
-    #import hazard
-    hazard = open_hazard(hazard_type, db, context)
+    if hazard_type == 'tsunami':
+        damage_threshold = [0.8, 0.45, 0.05]
+    elif hazard_type == 'liquefaction':
+        damage_threshold = [0.95, 0.75, 0.4]
 
-    #clip roads to hazards
-    roads_effected = gpd.clip(edges, hazard)
+    conditions = [
+    (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] >= damage_threshold[0]),
+    (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] >= damage_threshold[1]),
+    (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] >= damage_threshold[2]),
+    (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] <= damage_threshold[0]),
+    (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] <= damage_threshold[1]),
+    (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] <= damage_threshold[2])]
+
+    values = ['True','True','True','False','False','False']
+    exposed_roads['closed'] = np.select(conditions, values)
+
+    roads_effected = exposed_roads[(exposed_roads['closed'] == 'True')]
 
     # make list of from and to OSM IDs
     df = pd.DataFrame()
@@ -41,10 +55,12 @@ def close_rd(state, hazard_type, db, context):
     init_osrm.main(sim, state, context)
 
     # re query
-
+    return()
 
 def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''
+    #import edges
+    edges = gpd.read_file(r'data/road_edges/edges.shp')
 
     if hazard_type == 'liquefaction':
         filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
@@ -52,12 +68,27 @@ def open_hazard(hazard_type, db, context):
         #exclude unnecessary columns
         hazard = hazard[['Liq_Cat', 'geometry']]
         #catagorize all exposure as no, low, medium or high
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'Medium Liquefaction Vulnerability')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'Low Liquefaction Vulnerability')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'low') # this could be med?
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'low') # we should get a new category for this
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
+        #set up possible states
+        edges = gpd.sjoin(edges, hazard, how="left", op='within')
+        edges['exposure'] = edges['Liq_Cat'].fillna('low')
 
 
     elif hazard_type == 'tsunami':
         #open raster file
         hazard = rio.open('/homedirs/dak55/monte_christchurch/data/christchurch/hazard/tsunami.tif')
+        #get x,y point values of all dests
+        road_coords = [(x,y) for x, y in zip(edges.centroid.x, edges.centroid.y)]
+        #find corresponding inundation depth for each dest
+        edges['inundation_depth'] = [x[0] for x in hazard.sample(road_coords)]
+        #low, medium, high catagories for discrete fragility curve
+        bands = [(0, 0.5), (0.5, 2), (2, 1000)]
+        exposure_level = ['low', 'med', 'high']
+        conditions = [(edges['inundation_depth'] <= bands[0][1]), (edges['inundation_depth'] > bands[1][0]) & (edges['inundation_depth'] <= bands[1][1]), (edges['inundation_depth'] > bands[2][0])]
+        edges['exposure'] = np.select(conditions, exposure_level)
 
-    return(hazard)
+    return(edges)
