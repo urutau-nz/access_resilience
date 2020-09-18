@@ -23,11 +23,7 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-<<<<<<< HEAD
     hazard_type = 'liquefaction'
-=======
-    hazard_type = 'liquefaction' #'tsunami'
->>>>>>> faaa00d3b4789df22d32c021a09488ca2ffe23a8
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
