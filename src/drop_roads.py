@@ -33,13 +33,13 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
 
     # make list of from and to OSM IDs
     df = pd.DataFrame()
-    df['from_osmid'] = roads_effected['from_']
+    df['from_osmid'] = roads_effected['from']
     df['to_osmid'] = roads_effected['to']
 
     # reverse way
     df_inv = pd.DataFrame()
     df_inv['from_osmid'] = roads_effected['to']
-    df_inv['to_osmid'] = roads_effected['from_']
+    df_inv['to_osmid'] = roads_effected['from']
 
     df = df.append(df_inv)
     df = df.astype(int)
@@ -61,6 +61,8 @@ def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''
     #import edges
     edges = gpd.read_file(r'data/road_edges/{}/edges.shp'.format(context['city']))
+    if context['city'] == 'christchurch':
+        edges.rename(columns={'from_':'from'}, inplace=True)
 
     if hazard_type == 'liquefaction':
         if context['city'] == 'christchurch':
