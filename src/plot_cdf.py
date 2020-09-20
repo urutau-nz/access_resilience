@@ -60,7 +60,7 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
         #add spike lines
         fig.update_xaxes(showspikes=True)
         fig.update_yaxes(showspikes=True)
-        plotly.offline.plot(fig, filename='results/{}_{}_access_{}_exposure.html'.format(pop_group, service, hazard_type))
+        plotly.offline.plot(fig, filename='results/{}_{}_{}_access_{}_exposure.html'.format(context['city'], pop_group, service, hazard_type))
 
 
 #ecdf function
