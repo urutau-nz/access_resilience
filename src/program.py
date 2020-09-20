@@ -32,7 +32,7 @@ def main_function(state):
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
     #number of iterations for the simulation
-    nsim = 5
+    nsim = 100
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
