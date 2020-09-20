@@ -5,6 +5,8 @@
 import osmnx as ox
 #Get OSM network from a grid of co-ords
 G = ox.graph_from_bbox(north, south, east, west, network_type='drive', simplify=False) # N/S/E/W = N/S/E/W most point
+# Houston (30.2566308, 29.4393792, -94.8779992, -96.0635489)
+# Seattle (47.7574682, 47.4564817, -122.1985686, -122.4868201)
 # Save file
 ox.save_graph_shapefile(G, file_path)
 ```

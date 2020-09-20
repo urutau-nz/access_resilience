@@ -60,22 +60,35 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
 def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''
     #import edges
-    edges = gpd.read_file(r'data/road_edges/edges.shp')
+    edges = gpd.read_file(r'data/road_edges/{}/edges.shp'.format(context['city']))
 
     if hazard_type == 'liquefaction':
-        filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
-        hazard = gpd.read_file(filename)
-        #exclude unnecessary columns
-        hazard = hazard[['Liq_Cat', 'geometry']]
-        #catagorize all exposure as no, low, medium or high
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible'], 'low') # this could be med?
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'low') # we should get a new category for this
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
-        #set up possible states
-        edges = gpd.sjoin(edges, hazard, how="left", op='within')
-        edges['exposure'] = edges['Liq_Cat'].fillna('low')
+        if context['city'] == 'christchurch':
+            filename = '/homedirs/dak55/monte_christchurch/data/christchurch/hazard/liquefaction_vulnerability.shp'
+            hazard = gpd.read_file(filename)
+            #exclude unnecessary columns
+            hazard = hazard[['Liq_Cat', 'geometry']]
+            #catagorize all exposure as no, low, medium or high
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
+            #set up possible states
+            edges = gpd.sjoin(edges, hazard, how="left", op='within')
+            edges['exposure'] = edges['Liq_Cat'].fillna('low')
+        elif context['city'] == 'seattle':
+            filename = '/homedirs/dak55/monte_christchurch/data/{}/hazard/liquefaction_susceptibility_2.shp'.format(context['city'])
+            hazard = gpd.read_file(filename)
+            #exclude unnecessary columns
+            hazard = hazard[['LIQUEFAC_1', 'geometry']]
+            #catagorize all exposure as no, low, medium or high
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate', 'moderate to high'], 'med')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low to low'], 'low')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
+            #change name of column to generalise
+
+            hazard.rename(columns={'LIQUEFAC_1':'exposure'}, inplace=True)
+            edges = gpd.sjoin(edges, hazard, how="left", op='within')
+            edges['exposure'] = edges['exposure'].fillna('none')
 
 
     elif hazard_type == 'tsunami':

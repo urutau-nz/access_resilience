@@ -60,7 +60,7 @@ def cfg_init(state):
     elif state == 'tx':
         db['name'] = 'housim'
         context['city_code'] = 'hou'
-        context['city'] = 'Houston'
+        context['city'] = 'houston'
         context['osrm_url'] = 'http://localhost:6006'
         context['services'] = ['supermarket']
         context['country'] = 'usa'
