@@ -55,7 +55,7 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
     init_osrm.main(sim, state, context)
 
     # re query
-    return()
+    return(exposed_roads)
 
 def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''

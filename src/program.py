@@ -37,7 +37,7 @@ def main_function(state):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
         #drop roads
-        drop_roads.close_rd(exposed_roads, state, hazard_type, db, context)
+        exposed_roads = drop_roads.close_rd(exposed_roads, state, hazard_type, db, context)
         #requery
         distance_matrix = query_points(dest_ids, db, context)
         #find new nearest_service matrix
