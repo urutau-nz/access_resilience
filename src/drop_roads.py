@@ -101,9 +101,9 @@ def open_hazard(hazard_type, db, context):
         #find corresponding inundation depth for each dest
         edges['inundation_depth'] = [x[0] for x in hazard.sample(road_coords)]
         #low, medium, high catagories for discrete fragility curve
-        bands = [(0, 0.5), (0.5, 2), (2, 1000)]
-        exposure_level = ['low', 'med', 'high']
-        conditions = [(edges['inundation_depth'] <= bands[0][1]), (edges['inundation_depth'] > bands[1][0]) & (edges['inundation_depth'] <= bands[1][1]), (edges['inundation_depth'] > bands[2][0])]
+        bands = [(0, 0.25), (0.25, 0.5), (0.5, 2), (2, 1000)]
+        exposure_level = ['none', 'low', 'med', 'high']
+        conditions = [(edges['inundation_depth'] <= bands[0][1]), (edges['inundation_depth'] > bands[1][0]) & (edges['inundation_depth'] <= bands[1][1]), (edges['inundation_depth'] > bands[2][0]) & (edges['inundation_depth'] <= bands[2][1]), (edges['inundation_depth'] > bands[3][0])]
         edges['exposure'] = np.select(conditions, exposure_level)
 
     return(edges)
