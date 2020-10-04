@@ -7,10 +7,14 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
     '''plots ecdf'''
     #remove rows with 0 population from each df
     zero_pop = demo.loc[demo['total'] == 0]
-    zero_pop_id = zero_pop['id_orig'].tolist()
-    baseline_nearest = baseline_nearest[~baseline_nearest['id_orig'].isin(zero_pop_id)]
-    nearest_matrix = nearest_matrix[~nearest_matrix['id_orig'].isin(zero_pop_id)]
-    demo = demo[~demo['id_orig'].isin(zero_pop_id)]
+    zero_pop_id_flt = zero_pop['id_orig'].tolist()
+    #convert to ints
+    zero_pop_id_int = [int(i) for i in zero_pop_id_flt]
+    #convert to str
+    zero_pop_id_str = [str(i) for i in zero_pop_id_int]
+    baseline_nearest = baseline_nearest[~baseline_nearest['id_orig'].isin(zero_pop_id_str)]
+    nearest_matrix = nearest_matrix[~nearest_matrix['id_orig'].isin(zero_pop_id_str)]
+    demo = demo[~demo['id_orig'].isin(zero_pop_id_flt)]
     #get list of different services
     services = context['services']
     for service in services:
@@ -20,6 +24,7 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
         hist_mean = []
         hist_upper = []
         hist_lower = []
+
         for i in range(len(baseline)):
             hist_baseline = hist_baseline + [baseline['distance'].iloc[i]]*demo[pop_group].iloc[i]
             id = baseline.id_orig.iloc[i] #if we end up closing origins add in an if clause to avoid errors?
@@ -60,7 +65,7 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
         #add spike lines
         fig.update_xaxes(showspikes=True)
         fig.update_yaxes(showspikes=True)
-        plotly.offline.plot(fig, filename='results/{}_{}_{}_access_{}_exposure.html'.format(context['city'], pop_group, service, hazard_type))
+        plotly.offline.plot(fig, filename='results/{}_{}_access_{}_exposure.html'.format(pop_group, service, hazard_type))
 
 
 #ecdf function

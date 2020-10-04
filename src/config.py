@@ -16,6 +16,7 @@ import rasterio as rio
 import pickle as pk
 import psycopg2
 from sqlalchemy.engine import create_engine
+from geoalchemy2 import Geometry, WKTElement
 # functions - coding
 import code
 import os
@@ -46,8 +47,6 @@ def cfg_init(state):
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6010'
         context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
-        context['continent'] = 'australia-oceania'
-
     # SEATTLE
     elif state == 'wa':
         db['name'] = 'seadf'
@@ -57,18 +56,16 @@ def cfg_init(state):
         context['state'] = 'washington'
         # url to the osrm routing machine
         context['osrm_url'] = 'http://localhost:6004'
-        context['services'] = ['supermarket', 'primary_school']
-        context['continent'] = 'north-america/us'
+        context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # HOUSTON
     elif state == 'tx':
         db['name'] = 'housim'
         context['city_code'] = 'hou'
         context['city'] = 'houston'
-        context['osrm_url'] = 'http://localhost:6006'
-        context['services'] = ['supermarket']
+        context['osrm_url'] = 'http://localhost:6007'
+        context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
         context['country'] = 'usa'
         context['state'] = 'texas'
-        context['continent'] = 'north-america/us'
     # elif state == 'sim_ch':
     #     db['name'] = 'monte_christchurch'
     #     context['state'] = 'new-zealand'

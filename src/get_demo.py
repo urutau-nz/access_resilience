@@ -25,6 +25,7 @@ def demographic_data(df, db, context):
         #open US state census data
         census_data = pd.read_sql("SELECT * FROM demograph", db['con'])
         #select only rows that are common with our meshblocks
+        code.interact(local=locals())
         relevant_demo = census_data.loc[census_data['geoid10'].isin(df['id_orig'])]
         #format results
         relevant_demo.sort_values(by=['geoid10'], inplace=True)

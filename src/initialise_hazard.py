@@ -32,7 +32,6 @@ def open_hazard(hazard_type, db, context):
             #change name of column to generalise
 
             hazard.rename(columns={'LIQUEFAC_1':'exposure_catagory'}, inplace=True)
-
         #set up possible states
         exposure_level = ['low', 'med', 'high']
         #determine which exposure level each destination is in
@@ -54,6 +53,30 @@ def open_hazard(hazard_type, db, context):
         dest_coords = [(x,y) for x, y in zip(dest_gdf.geom.x, dest_gdf.geom.y)]
         #find corresponding inundation depth for each dest
         dest_gdf['inundation_depth'] = [x[0] for x in tsu.sample(dest_coords)]
+        #low, medium, high catagories for discrete fragility curve
+        bands = [(0, 0.5), (0.5, 2), (2, 1000)]
+        exposure_level = ['low', 'med', 'high']
+        for i in range(0, 3):
+            #subset dests that are exposed at particular level
+            exposed_dests = dest_gdf.loc[(dest_gdf['inundation_depth'] > bands[i][0]) & (dest_gdf['inundation_depth'] <= bands[i][1])]
+            ids = exposed_dests['id']
+            #formats for append
+            temp_df = pd.DataFrame()
+            temp_df['dest_id'] = ids
+            temp_df['exposure'] = exposure_level[i]
+            #append to df
+            exposure_df = pd.concat([exposure_df, temp_df], ignore_index=False)
+
+    elif hazard_type == 'hurricane':
+        hur = rio.open('/homedirs/dak55/monte_christchurch/data/houston/hazard/harvey_inundation/harris_dgft_tif.tif',mode='r+')
+        #get x,y point values of all dests
+        dest_coords = [(x,y) for x, y in zip(dest_gdf.geom.x, dest_gdf.geom.y)]
+        #find corresponding inundation depth for each dest
+        dest_gdf['inundation_depth'] = [x[0] for x in hur.sample(dest_coords)]
+        #set unaffected dests to 0 m depth
+        dest_gdf['inundation_depth'] = dest_gdf['inundation_depth'].replace([3.4028234663852886e+38], 0)
+        #change from ft to m
+        dest_gdf['inundation_depth'] = dest_gdf['inundation_depth'] * 0.3048
         #low, medium, high catagories for discrete fragility curve
         bands = [(0, 0.5), (0.5, 2), (2, 1000)]
         exposure_level = ['low', 'med', 'high']

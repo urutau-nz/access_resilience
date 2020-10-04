@@ -23,15 +23,19 @@ def kp_ede_main(demo, nearest_service, context):
     services = context['services']
     #removes gid and median_age columns, we are only interested in population groups
     pop_groups = demo.columns
-    index = [0, 2, 3, 4]
+    index = [0]
     pop_groups = np.delete(pop_groups, index)
+    #code.interact(local=locals())
     for pop_group in pop_groups:
         ede = []
         average = []
         for service in services:
             service_subset = nearest_service.loc[nearest_service['dest_type'] == service]
             distances = service_subset['distance']
-            demo_group = demo[pop_group].replace(['C'], 0).apply(lambda x: np.int64(x))
+            if 'C' in demo[pop_group]:
+                demo_group = demo[pop_group].replace(['C'], 0).apply(lambda x: np.int64(x))
+            else:
+                demo_group = demo[pop_group]
             ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
             average.append(np.average(distances, weights=demo_group))
         dict = {'ede':ede, 'mean':average, 'dest_type':services, 'population_group':pop_group}
