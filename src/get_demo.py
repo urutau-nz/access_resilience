@@ -23,9 +23,12 @@ def demographic_data(df, db, context):
         demo['african_american'] = None #not relevant for NZ data
     elif context['country'] == 'usa':
         #open US state census data
-        census_data = pd.read_sql("SELECT * FROM demograph", db['con'])
+        if context['city'] == 'houston': #temp fix while I send this to sql 
+            census_data = pd.read_csv(filename, dtype = {'STATEA':str, 'COUNTYA':str,'TRACTA':str,'BLOCKA':str, 'H7X001':int, 'H7X002':int, 'H7X003':int, 'H7X004':int, 'H7X005':int, 'H7X006':int, 'H7Y003':int})
+            census_data['geoid10'] = census_data['STATEA'] + census_data['COUNTYA'] + census_data['TRACTA'] + census_data['BLOCKA']
+        else:
+            census_data = pd.read_sql("SELECT * FROM demograph", db['con'])
         #select only rows that are common with our meshblocks
-        code.interact(local=locals())
         relevant_demo = census_data.loc[census_data['geoid10'].isin(df['id_orig'])]
         #format results
         relevant_demo.sort_values(by=['geoid10'], inplace=True)
