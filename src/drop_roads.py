@@ -77,7 +77,8 @@ def open_hazard(hazard_type, db, context):
             #catagorize all exposure as no, low, medium or high
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
-            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
             #set up possible states
             edges = gpd.sjoin(edges, hazard, how="left", op='within')
             edges['exposure'] = edges['Liq_Cat'].fillna('none')
@@ -87,9 +88,10 @@ def open_hazard(hazard_type, db, context):
             #exclude unnecessary columns
             hazard = hazard[['LIQUEFAC_1', 'geometry']]
             #catagorize all exposure as no, low, medium or high
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate', 'moderate to high'], 'med')
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low to low'], 'low')
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['moderate to high'], 'high')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate'], 'med')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'very low to low'], 'low')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
             #change name of column to generalise
 
             hazard.rename(columns={'LIQUEFAC_1':'exposure'}, inplace=True)
