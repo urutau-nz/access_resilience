@@ -23,7 +23,7 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'hurricane'
+    hazard_type = 'tsunami'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     #exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
@@ -58,19 +58,19 @@ def main_function(state):
         ede_df['sim_num'] = j
         ede_matrix = pd.concat([ede_matrix, ede_df], ignore_index=True)
 
-    sup = ede_matrix.loc[(ede_matrix['population_group'] == 'population') & (ede_matrix['dest_type'] == 'medical_clinic')]
+    sup = ede_matrix.loc[(ede_matrix['population_group'] == 'total') & (ede_matrix['dest_type'] == 'medical_clinic')]
     mean = sup.ede.mean()
     print('mean medical_centers = {}\n'.format(mean))
     tenth = sup.ede.quantile(0.1)
     print('10th percentile = {}\n'.format(tenth))
     ninety = sup.ede.quantile(0.9)
     print('90th percentile = {}\n'.format(ninety))
-
+    code.interact(local=locals())
 
 
 
 #if __name__ == "__main__":
-state = 'tx'#input('State: ')
+state = 'ch'#input('State: ')
 main_function(state)
 
 #calculate ede's

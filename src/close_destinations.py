@@ -18,7 +18,10 @@ def dests_to_drop(exposure_df, hazard_type, db, context):
         damage_threshold = [0.8, 0.45, 0.05]
     elif hazard_type == 'liquefaction':
         damage_threshold = [0.95, 0.65, 0.3]
-    for i in range(0, 3):
+    elif hazard_type == 'multi':
+        damage_threshold = [0.90, 0.50, 0.10, 0.01]
+        exposure_level = ['low', 'med', 'high', 'very high']
+    for i in range(len(damage_threshold)):
         to_shut = exposure_df.loc[(exposure_df['exposure'] == exposure_level[i]) & (exposure_df['damage'] > damage_threshold[i])]
         closed_ids.extend(to_shut['dest_id'].tolist())
     #this excludes the downtown 'destination', which is not really relevant for our investigations

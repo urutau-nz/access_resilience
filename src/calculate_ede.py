@@ -24,8 +24,20 @@ def kp_ede_main(demo, nearest_service, context):
     #removes gid and median_age columns, we are only interested in population groups
     pop_groups = demo.columns
     index = [0]
+    if context['country'] == 'nz': #removes african american column for NZ, which is currently 0
+        index.append(-1)
     pop_groups = np.delete(pop_groups, index)
-    #code.interact(local=locals())
+
+    #remove rows with 0 population from each df
+    zero_pop = demo.loc[demo['total'] == 0]
+    zero_pop_id_flt = zero_pop['id_orig'].tolist()
+    #convert to ints
+    zero_pop_id_int = [int(i) for i in zero_pop_id_flt]
+    #convert to str
+    zero_pop_id_str = [str(i) for i in zero_pop_id_int]
+    nearest_service = nearest_service[~nearest_service['id_orig'].isin(zero_pop_id_str)]
+    demo = demo[~demo['id_orig'].isin(zero_pop_id_flt)]
+
     for pop_group in pop_groups:
         ede = []
         average = []
