@@ -74,7 +74,7 @@ def query_points(closed_ids, db, context):
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
     return origxdest
 
-def write_to_postgres(df, db, table_name):
+def write_to_postgres(df, db, table_name, indices=True):
     ''' quickly write to a postgres database
         from https://stackoverflow.com/a/47984180/5890574'''
 
@@ -88,12 +88,13 @@ def write_to_postgres(df, db, table_name):
     cur.copy_from(output, table_name, null="") # null values become ''
 
     # update indices
-    queries = [
-                'CREATE INDEX "dest_idx" ON baseline_distance ("id_dest");',
-                'CREATE INDEX "orig_idx" ON baseline_distance ("id_orig");'
-                ]
-    for q in queries:
-        cur.execute(q)
+    if indices = True:
+        queries = [
+                    'CREATE INDEX "dest_idx" ON baseline_distance ("id_dest");',
+                    'CREATE INDEX "orig_idx" ON baseline_distance ("id_orig");'
+                    ]
+        for q in queries:
+            cur.execute(q)
 
     # commit to db
     db['con'].commit()
