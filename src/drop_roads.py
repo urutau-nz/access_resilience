@@ -13,14 +13,12 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
     exposed_roads['damage'] = damage_level
     exposure_level = ['low', 'med', 'high']
 
-    if hazard_type == 'tsunami':
-        damage_threshold = [0.8, 0.45, 0.05]
+    if hazard_type in ['tsunami', 'hurricane']:
+        damage_threshold = [0.9, 0.6, 0.2]
     elif hazard_type == 'liquefaction':
-        damage_threshold = [0.95, 0.75, 0.4]
-    elif hazard_type == 'hurricane':
-        damage_threshold = [0.8, 0.45, 0.05]
+        damage_threshold = [0.95, 0.7, 0.25]
     elif hazard_type == 'multi':
-        damage_threshold = [0.90, 0.50, 0.10, 0.01]
+        damage_threshold = [0.85, 0.55, 0.15, 0.05]
 
     conditions = [
     (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] >= damage_threshold[0]),
@@ -77,8 +75,7 @@ def open_hazard(hazard_type, db, context):
             #catagorize all exposure as no, low, medium or high
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
-            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
-            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
             #set up possible states
             edges = gpd.sjoin(edges, hazard, how="left", op='within')
             edges['exposure'] = edges['Liq_Cat'].fillna('none')
@@ -88,10 +85,9 @@ def open_hazard(hazard_type, db, context):
             #exclude unnecessary columns
             hazard = hazard[['LIQUEFAC_1', 'geometry']]
             #catagorize all exposure as no, low, medium or high
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['moderate to high'], 'high')
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate'], 'med')
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'very low to low'], 'low')
-            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['low to moderate', 'moderate to high'], 'med')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low to low'], 'low')
+            hazard['LIQUEFAC_1'] = hazard['LIQUEFAC_1'].replace(['very low', 'N/A (peat)', 'N/A (water)', 'N/A (bedrock)'], 'none')
             #change name of column to generalise
 
             hazard.rename(columns={'LIQUEFAC_1':'exposure'}, inplace=True)
@@ -165,5 +161,4 @@ def open_hazard(hazard_type, db, context):
         conditions.append(((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[3])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[4])) | ((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[2])) | ((edges['tsu_exp'] == el[2]) & (edges['liq_exp'] == el[3])))
         edges['exposure'] = np.select(conditions, exposure_level)
 
-    code.interact(local=locals())
     return(edges)

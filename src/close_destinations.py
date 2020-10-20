@@ -15,11 +15,11 @@ def dests_to_drop(exposure_df, hazard_type, db, context):
     #this is the expected percentage of services to remain open in each respective zone
     #it will be different for different hazards?
     if hazard_type in ['tsunami', 'hurricane']:
-        damage_threshold = [0.8, 0.45, 0.05]
+        damage_threshold = [0.6, 0.2, 0.025]
     elif hazard_type == 'liquefaction':
-        damage_threshold = [0.95, 0.65, 0.3]
+        damage_threshold = [0.90, 0.67, 0.195]
     elif hazard_type == 'multi':
-        damage_threshold = [0.90, 0.50, 0.10, 0.01]
+        damage_threshold = [0.55, 0.15, 0.01, 0]
         exposure_level = ['low', 'med', 'high', 'very high']
     for i in range(len(damage_threshold)):
         to_shut = exposure_df.loc[(exposure_df['exposure'] == exposure_level[i]) & (exposure_df['damage'] > damage_threshold[i])]
