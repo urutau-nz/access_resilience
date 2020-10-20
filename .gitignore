@@ -1,5 +1,6 @@
 /data
 /results
+/plotly
 /.git
 .bash_history
 /venv
