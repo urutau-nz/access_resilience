@@ -88,7 +88,7 @@ def write_to_postgres(df, db, table_name, indices=True):
     cur.copy_from(output, table_name, null="") # null values become ''
 
     # update indices
-    if indices = True:
+    if indices == True:
         queries = [
                     'CREATE INDEX "dest_idx" ON baseline_distance ("id_dest");',
                     'CREATE INDEX "orig_idx" ON baseline_distance ("id_orig");'
