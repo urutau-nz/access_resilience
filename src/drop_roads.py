@@ -110,7 +110,7 @@ def open_hazard(hazard_type, db, context):
 
     elif hazard_type == 'hurricane':
         #open raster file
-        hazard = rio.open('/homedirs/dak55/monte_christchurch/data/houston/hazard/harvey_inundation/harris_dgft_tif.tif',mode='r+')
+        hazard = rio.open('/homedirs/man112/monte_christchurch/data/houston/hazard/harvey_inundation/harris_dgft_tif.tif',mode='r+')
         #get x,y point values of all dests
         road_coords = [(x,y) for x, y in zip(edges.centroid.x, edges.centroid.y)]
         #find corresponding inundation depth for each dest

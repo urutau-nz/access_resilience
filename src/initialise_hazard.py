@@ -68,7 +68,7 @@ def open_hazard(hazard_type, db, context):
             exposure_df = pd.concat([exposure_df, temp_df], ignore_index=False)
 
     elif hazard_type == 'hurricane':
-        hur = rio.open('/homedirs/dak55/monte_christchurch/data/houston/hazard/harvey_inundation/harris_dgft_tif.tif',mode='r+')
+        hur = rio.open('/homedirs/man112/monte_christchurch/data/houston/hazard/harvey_inundation/harris_dgft_tif.tif',mode='r+')
         #get x,y point values of all dests
         dest_coords = [(x,y) for x, y in zip(dest_gdf.geom.x, dest_gdf.geom.y)]
         #find corresponding inundation depth for each dest
