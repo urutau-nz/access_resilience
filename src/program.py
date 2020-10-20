@@ -10,8 +10,6 @@ from close_destinations import *
 import drop_roads
 import init_osrm
 
-print('bones')
-
 def main_function(state):
     '''main'''
     #initialise config
