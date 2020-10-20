@@ -23,7 +23,7 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'hurricane'#'multi'#'liquefaction'
+    hazard_type = 'multi'#'hurricane'#'multi'#'liquefaction'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
@@ -31,7 +31,7 @@ def main_function(state):
     #open demographic data
     demo = demographic_data(baseline_nearest, db, context)
     #number of iterations for the simulation
-    nsim = 3
+    nsim = 1000
     for i in tqdm(range(nsim)):
         #close destinations
         dest_ids = dests_to_drop(exposure_df, hazard_type, db, context)
@@ -76,7 +76,7 @@ def main_function(state):
 
 
 #if __name__ == "__main__":
-state = 'tx'#input('State: ')
+state = 'wa'#input('State: ')
 main_function(state)
 
 #calculate ede's
@@ -84,3 +84,4 @@ main_function(state)
 #ede_df.to_csv('results/ede_after.csv')
 
 #plotting(nearest_service, demo, db, context)
+#
