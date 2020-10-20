@@ -49,7 +49,7 @@ def main_function(state):
     #save matrix to sql for analysis later
     save_matrix = True
     if save_matrix == True:
-        nearest_matrix.to_sql('nearest_matrix', if_exists='append', index=False)
+        nearest_matrix.to_sql('nearest_matrix', if_exists='replace', index=False)
     else:
         #plots
         plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type)
