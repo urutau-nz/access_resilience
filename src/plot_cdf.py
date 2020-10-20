@@ -3,7 +3,7 @@ import utils
 from config import *
 
 
-def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, pop_group='total'):
+def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, pop_group='total', nsim):
     '''plots ecdf'''
     #remove rows with 0 population from each df
     zero_pop = demo.loc[demo['total'] == 0]
@@ -46,8 +46,8 @@ def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, p
 
         # Set title
         fig.update_layout(
-            title_text="{} Access Distribution: {}".format(service, context['city']),
-            xaxis_title="Distance to nearest {} (m)".format(service),
+            title_text="{} Access Distribution: {}\n Simulations: {}".format(service.title(), context['city'].title(), nsim),
+            xaxis_title="Distance to nearest {} (m)".format(service.title()),
             yaxis_title="Percentage of Population (0-1)",
             xaxis_domain=[0.05, 1],
             xaxis=dict(

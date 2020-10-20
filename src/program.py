@@ -49,28 +49,27 @@ def main_function(state):
     #save matrix to sql for analysis later
     save_matrix = True
     if save_matrix == True:
-        nearest_matrix.to_sql('nearest_matrix', if_exists='replace', index=False)
-    else:
-        #plots
-        plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type)
+        write_to_postgres(nearest_matrix, db, 'nearest_distance')
+
+    plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, nsim)
 
 
-        #having a gander at some results
-        #update something horribly wrong is going on here
-        ede_matrix = pd.DataFrame()
-        for j in nearest_matrix.sim_num.unique():
-            subset = nearest_matrix.loc[nearest_matrix['sim_num'] == j]
-            ede_df = kp_ede_main(demo, subset, context)
-            ede_df['sim_num'] = j
-            ede_matrix = pd.concat([ede_matrix, ede_df], ignore_index=True)
+    #having a gander at some results
+    #update something horribly wrong is going on here
+    ede_matrix = pd.DataFrame()
+    for j in nearest_matrix.sim_num.unique():
+        subset = nearest_matrix.loc[nearest_matrix['sim_num'] == j]
+        ede_df = kp_ede_main(demo, subset, context)
+        ede_df['sim_num'] = j
+        ede_matrix = pd.concat([ede_matrix, ede_df], ignore_index=True)
 
-        sup = ede_matrix.loc[(ede_matrix['population_group'] == 'total') & (ede_matrix['dest_type'] == 'medical_clinic')]
-        mean = sup.ede.mean()
-        print('mean medical_centers = {}\n'.format(mean))
-        tenth = sup.ede.quantile(0.1)
-        print('10th percentile = {}\n'.format(tenth))
-        ninety = sup.ede.quantile(0.9)
-        print('90th percentile = {}\n'.format(ninety))
+    sup = ede_matrix.loc[(ede_matrix['population_group'] == 'total') & (ede_matrix['dest_type'] == 'medical_clinic')]
+    mean = sup.ede.mean()
+    print('mean medical_centers = {}\n'.format(mean))
+    tenth = sup.ede.quantile(0.1)
+    print('10th percentile = {}\n'.format(tenth))
+    ninety = sup.ede.quantile(0.9)
+    print('90th percentile = {}\n'.format(ninety))
 
 
 
