@@ -10,6 +10,8 @@ from close_destinations import *
 import drop_roads
 import init_osrm
 
+print('bones')
+
 def main_function(state):
     '''main'''
     #initialise config
@@ -23,7 +25,7 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'multi'
+    hazard_type = 'liquefaction'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
@@ -76,7 +78,7 @@ def main_function(state):
 
 
 #if __name__ == "__main__":
-state = 'ch'#input('State: ')
+state = 'wa'#input('State: ')
 main_function(state)
 
 #calculate ede's
