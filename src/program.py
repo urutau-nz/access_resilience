@@ -50,6 +50,7 @@ def main_function(state):
     save_matrix = True
     if save_matrix == True:
         write_to_postgres(nearest_matrix, db, 'nearest_distance', indices=False)
+        print('Saved nearest distance matrix to SQL')
 
     plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, nsim)
 
