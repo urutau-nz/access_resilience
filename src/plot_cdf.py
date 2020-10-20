@@ -3,7 +3,7 @@ import utils
 from config import *
 
 
-def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, pop_group='total', nsim):
+def plotting(baseline_nearest, nearest_matrix, demo, db, context, hazard_type, nsim, pop_group='total'):
     '''plots ecdf'''
     #remove rows with 0 population from each df
     zero_pop = demo.loc[demo['total'] == 0]
