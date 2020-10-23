@@ -12,7 +12,7 @@ if state == 'ch':
 else:
     demo_file = 'demograph'
 
-def main(state):
+def main():
     '''Pulls raw data from SQL, refines and saves as a CSV'''
     db, context = cfg_init(state)
     nearest_matrix = pd.read_sql('SELECT * FROM nearest_matrix_{}'.format(hazard), db['con'])
