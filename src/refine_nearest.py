@@ -3,12 +3,9 @@ from get_demo import *
 from nearest_service import *
 from query import *
 
-def refine_nearest_distance(baseline_nearest, demo, db, context):
+def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context):
     '''refines the nearest distance matrix so it has a consistent format between all cities.
     allows for plotting'''
-    #to work with a smaller matrix
-    df.sim_num = pd.to_numeric(df.sim_num)
-    df = df.loc[df['sim_num'] < 10]
     #intialise new df
     refined_df = pd.DataFrame(columns=[
     'id_orig', 'base_supermarket', 'base_medical_clinic', 'base_primary_school', 'mean_supermarket',
@@ -16,13 +13,13 @@ def refine_nearest_distance(baseline_nearest, demo, db, context):
     '5_supermarket', '5_medical_clinic', '5_primary_school'
     ])
     #replace NaN
-    df.fillna('isolated', inplace=True)
+    nearest_matrix.fillna('isolated', inplace=True)
     #determine percentage of time that block is isolated from services
-    id_orig = df.id_orig.unique()
+    id_orig = nearest_matrix.id_orig.unique()
     for i in tqdm(range(len(id_orig))):
         #get subset of nearest matrix that includes id
         id = id_orig[i]
-        df_subset = df.loc[df['id_orig'] == id]
+        df_subset = nearest_matrix.loc[df['id_orig'] == id]
         #create tempoary dictionary to append to the df
         dict = {'id_orig': id}
         #determine level of isolated from each service type
