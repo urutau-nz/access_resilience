@@ -42,7 +42,7 @@ def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
     for i in tqdm(range(len(id_orig))):
         #get subset of nearest matrix that includes id
         id = id_orig[i]
-        df_subset = nearest_matrix.loc[df['id_orig'] == id]
+        df_subset = nearest_matrix.loc[nearest_matrix['id_orig'] == id]
         #create tempoary dictionary to append to the df
         dict = {'id_orig': id}
         #determine level of isolated from each service type
