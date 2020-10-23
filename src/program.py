@@ -72,10 +72,24 @@ def main_function(state):
 
 
 
+def doot(state):
+    #initialise config
+    db, context = cfg_init(state)
+    # reset osrm network
+    sim = False
+    init_osrm.main(sim, state, context)
+    print('Beginning Baseline Query')
+    #open baseline origxdest df and nearest service #definately would be faster to save and open these, should make an initilise function?
+    dest_ids = []
+    baseline_distance = query_points(dest_ids, db, context)
+    baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
+
+    write_to_postgres(baseline_nearest, db, 'baseline_nearest', indices=False)
 
 #if __name__ == "__main__":
-state = 'ch'#input('State: ')
-main_function(state)
+state = 'wa'#input('State: ')
+doot(state)
+#main_function(state)
 
 #calculate ede's
 #ede_df = kp_ede_main(demo, nearest_service, context)
