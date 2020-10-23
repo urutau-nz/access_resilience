@@ -3,8 +3,8 @@ from get_demo import *
 from nearest_service import *
 from query import *
 
-state = 'ch' #('ch', 'wa', 'tx')
-hazard = 'tsunami'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
+state = 'wa' #('ch', 'wa', 'tx')
+hazard = 'liquefaction'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
 print('Compiling results for {} under a {} hazard scenario'.format(state, hazard))
 
 def main():
