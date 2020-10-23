@@ -88,3 +88,8 @@ def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
     refined_df['african_american'] = demo['african_american']
 
     return refined_df
+
+
+
+if __name__ == '__main__':
+    main()
