@@ -14,7 +14,8 @@ def main():
     baseline_nearest = pd.read_sql('SELECT * FROM baseline_nearest', db['con'])
     demo = demographic_data(baseline_nearest, db, context)
     refined_df = refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
-    code.interact(local=locals())
+    #code.interact(local=locals())
+    refined_df.to_csv(r'results/results_{}_{}.csv'.format(state, hazard))
 
 
 
