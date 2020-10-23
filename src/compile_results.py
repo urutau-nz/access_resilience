@@ -7,17 +7,12 @@ state = 'ch' #('ch', 'wa', 'tx')
 hazard = 'multi'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
 print('Compiling results for {} under a {} hazard scenario'.format(state, hazard))
 
-if state == 'ch':
-    demo_file = 'census_18'
-else:
-    demo_file = 'demograph'
-
 def main():
     '''Pulls raw data from SQL, refines and saves as a CSV'''
     db, context = cfg_init(state)
     nearest_matrix = pd.read_sql('SELECT * FROM nearest_distance_{}'.format(hazard), db['con'])
     baseline_nearest = pd.read_sql('SELECT * FROM baseline_nearest', db['con'])
-    demo = pd.read_sql('SELECT * FROM {}'.format(demo_file), db['con'])
+    demo = demographic_data(baseline_nearest, db, context)
     refined_df = refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
     code.interact(local=locals())
 
