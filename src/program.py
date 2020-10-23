@@ -87,7 +87,7 @@ def doot(state):
     write_to_postgres(baseline_nearest, db, 'baseline_nearest', indices=False)
 
 #if __name__ == "__main__":
-state = 'wa'#input('State: ')
+state = 'tx'#input('State: ')
 doot(state)
 #main_function(state)
 
