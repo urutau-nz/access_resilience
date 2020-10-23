@@ -15,7 +15,7 @@ else:
 def main():
     '''Pulls raw data from SQL, refines and saves as a CSV'''
     db, context = cfg_init(state)
-    nearest_matrix = pd.read_sql('SELECT * FROM nearest_matrix_{}'.format(hazard), db['con'])
+    nearest_matrix = pd.read_sql('SELECT * FROM nearest_distance_{}'.format(hazard), db['con'])
     baseline_nearest = pd.read_sql('SELECT * FROM baseline_nearest', db['con'])
     demo = pd.read_sql('SELECT * FROM {}'.format(demo_file), db['con'])
     refined_df = refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
