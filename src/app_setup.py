@@ -4,15 +4,15 @@ Takes raw and process results and formats them for the access-resilience app
 
 from config import *
 
-state = 'wa' #('ch', 'tx', 'wa')
+state = 'ch' #('ch', 'tx', 'wa')
 db, context = cfg_init(state)
 
 def main():
-    format_blocks()
-
+    #format_blocks()
+    format_edges()
 
 ####################################################################################################################################################################################
-''' SHP to GEOJSON '''
+''' BLOCKS to GEOJSON '''
 ####################################################################################################################################################################################
 def format_blocks():
     ''' Convert meshblock shapefile to geojson '''
@@ -22,12 +22,16 @@ def format_blocks():
 
     blocks.to_file("plotly/{}_block.geojson".format(state), driver='GeoJSON')
 
+####################################################################################################################################################################################
+''' EDGES to GEOJSON '''
+####################################################################################################################################################################################
+def format_edges():
+    ''' Convert edges shapefile to geojson '''
+    edges = gpd.read_file(r'data/{}/road_edges/edges.shp'.format(context['city']))
 
+    edges = edges.to_crs("EPSG:4326")
 
-
-
-
-
+    edges.to_file("plotly/{}_edges.geojson".format(state), driver='GeoJSON')
 
 
 ####################################################################################################################################################################################
