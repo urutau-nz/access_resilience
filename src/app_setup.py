@@ -41,9 +41,9 @@ def format_edges():
 def format_dests():
     ''' Saves dest lat and lons in a CSV '''
     dests = gpd.read_postgis('SELECT * FROM destinations', db['con'])
-    dests['x'] = dests.geom.centroid.x
-    dests['y'] = dests.geom.centroid.y
-    dests = dests.drop(columns=['geom'])
+    dests['lon'] = dests.geom.centroid.x
+    dests['lat'] = dests.geom.centroid.y
+    dests = dests.drop(columns=['geom', 'id'])
     dests.to_csv(r'plotly/{}_destinations.csv'.format(state))
 
 
