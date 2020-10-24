@@ -8,7 +8,7 @@ state = input("Enter State (ch, wa, tx): ") #('ch', 'tx', 'wa')
 db, context = cfg_init(state)
 
 def main():
-    job = input('Would you like to: (1)Format Blocks, (2)Format Edges, (3)Format Destinations, (4)All': )
+    job = input('Would you like to: (1)Format Blocks, (2)Format Edges, (3)Format Destinations, (4)All: ' )
     if job == 1:
         format_blocks()
     elif job == 2:
