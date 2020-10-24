@@ -4,14 +4,21 @@ Takes raw and process results and formats them for the access-resilience app
 
 from config import *
 
-state = 'ch' #('ch', 'tx', 'wa')
+state = 'wa' #('ch', 'tx', 'wa')
 db, context = cfg_init(state)
+
+def main():
+    format_blocks()
+
 
 ####################################################################################################################################################################################
 ''' SHP to GEOJSON '''
 ####################################################################################################################################################################################
+def format_blocks():
+    ''' Convert meshblock shapefile to geojson '''
+    blocks = pd.read_sql('SELECT * FROM block', db['con'])
 
-countries_gdf.to_file("countries.geojson", driver='GeoJSON')
+    blocks.to_file("plotly/{}_block.geojson".format(state), driver='GeoJSON')
 
 
 
@@ -56,3 +63,19 @@ countries_gdf.to_file("countries.geojson", driver='GeoJSON')
 ####################################################################################################################################################################################
 ''' Nearest_Dist to CSV '''
 ####################################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    main()
