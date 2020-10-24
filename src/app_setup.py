@@ -4,12 +4,13 @@ Takes raw and process results and formats them for the access-resilience app
 
 from config import *
 
-state = 'ch' #('ch', 'tx', 'wa')
+state = 'wa' #('ch', 'tx', 'wa')
 db, context = cfg_init(state)
 
 def main():
     #format_blocks()
-    format_edges()
+    #format_edges()
+    format_dests()
 
 ####################################################################################################################################################################################
 ''' BLOCKS to GEOJSON '''
@@ -37,8 +38,13 @@ def format_edges():
 ####################################################################################################################################################################################
 ''' Destinations to CSV '''
 ####################################################################################################################################################################################
-
-
+def format_dests():
+    ''' Saves dest lat and lons in a CSV '''
+    dests = gpd.read_postgis('SELECT * FROM destinations', db['con'])
+    dests['x'] = dests.geom.centroid.x
+    dests['y'] = dests.geom.centroid.y
+    dests = dests.drop(columns=['geom'])
+    dests.to_csv(r'plotly/{}_destinations.csv'.format(state))
 
 
 
