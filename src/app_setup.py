@@ -18,6 +18,8 @@ def format_blocks():
     ''' Convert meshblock shapefile to geojson '''
     blocks = gpd.read_postgis('SELECT * FROM block', db['con'])
 
+    blocks = blocks.to_crs("EPSG:3857")
+
     blocks.to_file("plotly/{}_block.geojson".format(state), driver='GeoJSON')
 
 
