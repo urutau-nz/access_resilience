@@ -25,11 +25,19 @@ def main():
 ####################################################################################################################################################################################
 def format_blocks():
     ''' Convert meshblock shapefile to geojson '''
-    blocks = gpd.read_postgis('SELECT * FROM block', db['con'])
+    #creates df of geoid10 indexes
+    sql = "SELECT * FROM block"
+    blocks = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+
+    # blocks = gpd.read_postgis('SELECT * FROM block', db['con'])
+
+    blocks = blocks.set_index('sa12018_v1')
 
     blocks = blocks.to_crs("EPSG:4326")
 
-    blocks.to_file("plotly/{}_block.geojson".format(state), driver='GeoJSON')
+    # blocks.to_file("plotly/{}_block.geojson".format(state), index=True, driver='GeoJSON')
+    with open("plotly/{}_block.geojson".format(state), "wt") as tf:
+        tf.write(blocks.to_json())
 
 ####################################################################################################################################################################################
 ''' EDGES to GEOJSON '''
