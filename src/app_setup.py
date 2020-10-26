@@ -25,15 +25,15 @@ def main():
 ####################################################################################################################################################################################
 def format_blocks():
     ''' Convert meshblock shapefile to geojson '''
-    #creates df of geoid10 indexes
-    sql = "SELECT * FROM block"
-    blocks = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
-    # blocks = gpd.read_postgis('SELECT * FROM block', db['con'])
     if state == 'ch':
         block_id = 'sa12018_v1'
     else:
         block_id = 'geoid10'
+
+    #creates df of geoid10 indexes
+    sql = "SELECT geom, block_id FROM block"
+    blocks = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
     blocks[block_id] = blocks[block_id].astype(int)
     blocks = blocks.set_index(block_id)
