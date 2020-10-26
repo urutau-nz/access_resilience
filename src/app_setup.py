@@ -49,11 +49,18 @@ def format_blocks():
 ####################################################################################################################################################################################
 def format_edges():
     ''' Convert edges shapefile to geojson '''
-    edges = gpd.read_file(r'data/{}/road_edges/edges.shp'.format(context['city']))
+    city = context['city'])
+    edges = gpd.read_file(r'data/{}/road_edges/edges.shp'.format(city))
 
     edges = edges.to_crs("EPSG:4326")
 
     edges = edges[['osmid', 'geometry']]
+
+    count = 0
+    for id in edges['osmid']:
+        if ('[' in id) == True:
+            edges['osmid'].iloc[count] = id.split()[0][1:-1]
+        count += 1
 
     edges['osmid'] = edges['osmid'].astype(int)
     edges = edges.set_index('osmid')
