@@ -32,7 +32,7 @@ def format_blocks():
         block_id = 'geoid10'
 
     #creates df of geoid10 indexes
-    sql = "SELECT geom, block_id FROM block"
+    sql = "SELECT geom, {} FROM block".format(block_id)
     blocks = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
     blocks[block_id] = blocks[block_id].astype(int)
