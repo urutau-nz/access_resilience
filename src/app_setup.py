@@ -53,7 +53,14 @@ def format_edges():
 
     edges = edges.to_crs("EPSG:4326")
 
-    edges.to_file("plotly/{}_edges.geojson".format(state), driver='GeoJSON')
+    edges = edges[['osmid', 'geometry']]
+
+    edges['osmid'] = edges['osmid'].astype(int)
+    edges = edges.set_index('osmid')
+
+    #edges.to_file("plotly/{}_edges.geojson".format(state), driver='GeoJSON')
+    with open("plotly/{}_edges.geojson".format(state), "wt") as tf:
+        tf.write(edges.to_json())
 
 
 ####################################################################################################################################################################################
