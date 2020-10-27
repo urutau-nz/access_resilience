@@ -50,24 +50,48 @@ def format_blocks():
 def format_edges():
     ''' Convert edges shapefile to geojson '''
     city = context['city']
+    if state == 'ch':
+        hazard = int(input('What Hazard? (1)Tsunami, (2)Liquefaction, (3)Multi'))
+        if hazard == 1:
+            hazard = 'tsunami'
+        elif hazard == 2:
+            hazard = 'liquefaction'
+        elif hazard == 3:
+            hazard = 'multi'
+    elif state == 'wa':
+        hazard = 'liquefaction'
+    elif state =='tx':
+        hazard = 'hurricane'
+
     edges = gpd.read_file(r'data/{}/road_edges/edges.shp'.format(city))
-
+    updates = pd.read_csv(r'data/{}_{}_update.csv'.format(state, hazard), names=["from_", "to", "speed"])
+    from_ids = updates['from_'].tolist()
+    to_ids = updates['to'].tolist()
     edges = edges.to_crs("EPSG:4326")
+    edges = edges[['osmid', 'from_', 'to', 'geometry']]
+    edges = edges[edges['from_'].isin(from_ids) & edges['to'].isin(to_ids)]
 
-    edges = edges[['osmid', 'geometry']]
 
-    count = 0
-    for id in edges['osmid']:
-        if ('[' in id) == True:
-            edges['osmid'].iloc[count] = id.split()[0][1:-1]
-        count += 1
+    lats = []
+    lons = []
+    names = []
+    for feature in edges.geometry:
+        if isinstance(feature, shapely.geometry.linestring.LineString):
+            linestrings = [feature]
+        elif isinstance(feature, shapely.geometry.multilinestring.MultiLineString):
+            linestrings = feature.geoms
+        else:
+            continue
+        for linestring in linestrings:
+            x, y = linestring.xy
+            lats = np.append(lats, y)
+            lons = np.append(lons, x)
+            lats = np.append(lats, None)
+            lons = np.append(lons, None)
 
-    edges['osmid'] = edges['osmid'].astype(int)
-    edges = edges.set_index('osmid')
+    np.save(r'plotly/{}_{}_lat_edges'.format(state, hazard), lats)
+    np.save(r'plotly/{}_{}_lon_edges'.format(state, hazard), lons)
 
-    #edges.to_file("plotly/{}_edges.geojson".format(state), driver='GeoJSON')
-    with open("plotly/{}_edges.geojson".format(state), "wt") as tf:
-        tf.write(edges.to_json())
 
 
 ####################################################################################################################################################################################
