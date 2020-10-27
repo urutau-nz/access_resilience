@@ -51,8 +51,10 @@ def format_blocks():
 def format_edges():
     ''' Convert edges shapefile to geojson '''
     city = context['city']
+    from_col = 'from'
     if state == 'ch':
-        hazard = int(input('What Hazard? (1)Tsunami, (2)Liquefaction, (3)Multi :'))
+        from_col = 'from_'
+        hazard = int(input('What Hazard: (1)Tsunami, (2)Liquefaction, (3)Multi: '))
         if hazard == 1:
             hazard = 'tsunami'
         elif hazard == 2:
@@ -69,8 +71,8 @@ def format_edges():
     from_ids = updates['from_'].tolist()
     to_ids = updates['to'].tolist()
     edges = edges.to_crs("EPSG:4326")
-    edges = edges[['osmid', 'from_', 'to', 'geometry']]
-    edges = edges[edges['from_'].isin(from_ids) & edges['to'].isin(to_ids)]
+    edges = edges[['osmid', from_col, 'to', 'geometry']]
+    edges = edges[edges[from_col].isin(from_ids) & edges['to'].isin(to_ids)]
 
 
     lats = []
