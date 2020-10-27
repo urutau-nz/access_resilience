@@ -3,6 +3,7 @@ Takes raw and process results and formats them for the access-resilience app
 '''
 
 from config import *
+import shapely
 
 state = input("Enter State (ch, wa, tx): ") #('ch', 'tx', 'wa')
 db, context = cfg_init(state)
@@ -51,7 +52,7 @@ def format_edges():
     ''' Convert edges shapefile to geojson '''
     city = context['city']
     if state == 'ch':
-        hazard = int(input('What Hazard? (1)Tsunami, (2)Liquefaction, (3)Multi'))
+        hazard = int(input('What Hazard? (1)Tsunami, (2)Liquefaction, (3)Multi :'))
         if hazard == 1:
             hazard = 'tsunami'
         elif hazard == 2:
