@@ -72,7 +72,7 @@ def main_function(state):
 
 
 
-def doot(state):
+def query_baseline(state):
     #initialise config
     db, context = cfg_init(state)
     # reset osrm network
@@ -88,7 +88,7 @@ def doot(state):
 
 #if __name__ == "__main__":
 state = 'tx'#input('State: ')
-#doot(state)
+#query_baseline(state)
 main_function(state)
 
 #calculate ede's
