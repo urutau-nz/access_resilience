@@ -3,8 +3,8 @@ from get_demo import *
 from nearest_service import *
 from query import *
 
-state = 'wa' #('ch', 'wa', 'tx')
-hazard = 'liquefaction'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
+state = 'ch' #('ch', 'wa', 'tx')
+hazard = 'multi'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
 print('Compiling results for {} under a {} hazard scenario'.format(state, hazard))
 
 def main():
@@ -17,7 +17,7 @@ def main():
     #remove blocks with 0 population
     refined_df = refined_df.loc[refined_df['total_pop'] > 0]
     refined_df.reset_index(inplace=True, drop=True)
-    refined_df.to_csv(r'results/results_{}_{}.csv'.format(state, hazard))
+    refined_df.to_csv(r'results/results_{}_{}_10.csv'.format(state, hazard))
 
 
 
