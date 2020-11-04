@@ -73,6 +73,9 @@ def format_edges():
     edges = edges.to_crs("EPSG:4326")
     edges = edges[['osmid', from_col, 'to', 'geometry']]
     edges = edges[edges[from_col].isin(from_ids) & edges['to'].isin(to_ids)]
+    m_edges = edges.to_crs("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs")
+    road_length = m_edges.geometry.length.sum()/1000
+    print('{} Damaged Road Length in a {}: {}km'.format(city, hazard, np.round(road_length, 1)))
 
 
     lats = []
