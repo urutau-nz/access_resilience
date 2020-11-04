@@ -1,5 +1,6 @@
 '''
 Adding various types of destinations. Note that filenames etc will have to be changed. More suited to running on a line by line basis
+This is mostly just a mess of me trying to get the crs to line up when appending a new shp of dests to the existing destinations table
 '''
 
 from config import *

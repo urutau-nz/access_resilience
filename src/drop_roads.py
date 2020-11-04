@@ -75,7 +75,8 @@ def open_hazard(hazard_type, db, context):
             #catagorize all exposure as no, low, medium or high
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
-            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
             #set up possible states
             edges = gpd.sjoin(edges, hazard, how="left", op='within')
             edges['exposure'] = edges['Liq_Cat'].fillna('none')
@@ -142,15 +143,16 @@ def open_hazard(hazard_type, db, context):
         hazard = gpd.read_file(filename)
         #exclude unnecessary columns
         hazard = hazard[['Liq_Cat', 'geometry']]
-        #catagorize all exposure as no, low, medium or high
+        #catagorize all exposure as none, low, medium or high
         hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
         hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Medium Liquefaction Vulnerability'], 'med')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low') # this should be justified
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability', 'Liquefaction Damage is Possible'], 'low')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
         #set up possible states
         edges = gpd.sjoin(edges, hazard, how="left", op='within')
         edges['liq_exp'] = edges['Liq_Cat'].fillna('none')
 
-        #increase exposure level of dests that are exposed to both hazards. e.g low+low=med, low+med=med, med+med=high, high+med=veryhigh, high+high=veryhigh
+        #increase exposure level of dests that are exposed to both hazards. e.g low+low=med, low+med=med, med+med=high, high+med=high, high+high=veryhigh
         el = ['none', 'low', 'med', 'high', 'very_high']
         exposure_level = ['none', 'low', 'med', 'high', 'very_high']
         conditions = []
@@ -158,7 +160,7 @@ def open_hazard(hazard_type, db, context):
         conditions.append(((edges['tsu_exp'] == el[1]) & (edges['liq_exp'] == el[0])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[1])))
         conditions.append(((edges['tsu_exp'] == el[2]) & (edges['liq_exp'] == el[0])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[2])) | ((edges['tsu_exp'] == el[2]) & (edges['liq_exp'] == el[1])) | ((edges['tsu_exp'] == el[1]) & (edges['liq_exp'] == el[2])) | ((edges['tsu_exp'] == el[1]) & (edges['liq_exp'] == el[1])))
         conditions.append(((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[0])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[3])) | ((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[1])) | ((edges['tsu_exp'] == el[1]) & (edges['liq_exp'] == el[3])) | ((edges['tsu_exp'] == el[2]) & (edges['liq_exp'] == el[2])))
-        conditions.append(((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[3])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[4])) | ((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[2])) | ((edges['tsu_exp'] == el[2]) & (edges['liq_exp'] == el[3])))
+        conditions.append(((edges['tsu_exp'] == el[3]) & (edges['liq_exp'] == el[3])) | ((edges['tsu_exp'] == el[0]) & (edges['liq_exp'] == el[4])))
         edges['exposure'] = np.select(conditions, exposure_level)
 
     return(edges)

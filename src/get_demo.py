@@ -1,8 +1,7 @@
 from config import *
 
 def demographic_data(df, db, context):
-    '''returns the demographic data with blocks that are common with input df (so df can be nearest_service or distance matrix)
-    Removes any rows from input df that do not have census data (these are usually in the ocean)'''
+    '''returns the demographic data with blocks that are common with input df (so df can be nearest_service or distance matrix)'''
     #retrieve census data and format so as to have standard column names between the two countries
     if context['country'] == 'nz':
         #open census data for all of nz
@@ -16,7 +15,7 @@ def demographic_data(df, db, context):
         sorted_demo = relevant_demo.drop(['gid', 'median_age', 'male_pop', 'female_pop'], axis=1)
         #replace values that are'confidential'
         sorted_demo = sorted_demo.replace(['C'], 0).apply(lambda x: np.int64(x))
-        #standardize column names. Note latino pop is more relevant for USA, melaa in NZ census includes middle eastarn and african as well as latino
+        #standardize column names. Note latino pop is more relevant for USA, melaa in NZ census includes middle eastarn and african as well as latino. Further note that because latino is not a race it was not included in our eventaul analysis
         sorted_demo = sorted_demo.rename({'population':'total', 'pop_euro':'white', 'pop_maori':'indigenous', 'pop_asian':'asian', 'pop_pacific':'polynesian', 'pop_melaa':'latino'}, axis=1)
         demo = sorted_demo[['total', 'white', 'indigenous', 'asian', 'polynesian', 'latino']]
         demo.insert(loc=0, column='id_orig', value=relevant_demo['gid'])
@@ -34,14 +33,3 @@ def demographic_data(df, db, context):
         demo = relevant_demo[['total', 'white', 'indigenous', 'asian', 'polynesian', 'latino', 'african_american']]
         demo.insert(loc=0, column='id_orig', value=relevant_demo['geoid10'])
     return demo
-
-
-#removes any rows in nearest_service (called df here) that dont have census data. More useful to just copy and paste this and then take out the block(s)
-#if len(relevant_demo) < len(df):
-#    to_drop = []
-#    for value in df['id_orig']:
-#       if len(relevant_demo.loc[relevant_demo['gid'] == value]) == 0:
-#           to_drop.append(value)
-#    df = df.loc[~df['id_orig'].isin(to_drop)]
-
-#need to remove 7029868 orig_id

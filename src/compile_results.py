@@ -3,17 +3,21 @@ from get_demo import *
 from nearest_service import *
 from query import *
 
-state = 'wa' #('ch', 'wa', 'tx')
-hazard = 'liquefaction'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
+state = 'ch' #('ch', 'wa', 'tx')
+hazard = 'multi'  #('liquefaction', 'tsunami', 'hurricane', 'multi')
 print('Compiling results for {} under a {} hazard scenario'.format(state, hazard))
 
 def main():
     '''Pulls raw data from SQL, refines and saves as a CSV'''
     db, context = cfg_init(state)
+    #open up required tables
     nearest_matrix = pd.read_sql('SELECT * FROM nearest_distance_{}'.format(hazard), db['con'])
     baseline_nearest = pd.read_sql('SELECT * FROM baseline_nearest', db['con'])
     demo = demographic_data(baseline_nearest, db, context)
-    refined_df = refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
+    #income data was added for Christchurch at a late stage and hasn't been put into general format.
+    #Too run this file without income data just take out all income bits at the end of refine_nearest_distance
+    income = pd.read_csv('/homedirs/dak55/monte_christchurch/data/christchurch/demographic/ch_income.csv')
+    refined_df = refine_nearest_distance(nearest_matrix, baseline_nearest, demo, income, db, context)
     #remove blocks with 0 population
     refined_df = refined_df.loc[refined_df['total_pop'] > 0]
     refined_df.reset_index(inplace=True, drop=True)
@@ -24,7 +28,7 @@ def main():
 
 
 
-def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context):
+def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, income, db, context):
     '''refines the nearest distance matrix so it has a consistent format between all cities.
     allows for plotting'''
     #intialise new df
@@ -84,7 +88,17 @@ def refine_nearest_distance(nearest_matrix, baseline_nearest, demo, db, context)
     refined_df['polynesian'] = demo['polynesian']
     refined_df['latino'] = demo['latino']
     refined_df['african_american'] = demo['african_american']
-
+    #add income data
+    income = income.loc[income['Area_Code'].isin(refined_df['id_orig'].astype(str))]
+    income.sort_values(by=['Area_Code'], inplace=True)
+    income.reset_index(inplace=True, drop=True)
+    refined_df['0_5000'] = income['Census_2018_Grouped_personal_income_1_.5.000.or.less_CURP_adult']
+    refined_df['5000_10000'] = income['Census_2018_Grouped_personal_income_2_.5.001..10.000_CURP_adult']
+    refined_df['10001_20000'] = income['Census_2018_Grouped_personal_income_3_.10.001..20.000_CURP_adult']
+    refined_df['20001_30000'] = income['Census_2018_Grouped_personal_income_4_.20.001..30.000_CURP_adult']
+    refined_df['30001_50000'] = income['Census_2018_Grouped_personal_income_5_.30.001..50.000_CURP_adult']
+    refined_df['50001_70000'] = income['Census_2018_Grouped_personal_income_6_.50.001..70.000_CURP_adult']
+    refined_df['70001_inf'] = income['Census_2018_Grouped_personal_income_7_.70.001.or.more_CURP_adult']
     return refined_df
 
 
