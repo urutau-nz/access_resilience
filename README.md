@@ -8,10 +8,12 @@ services/destinations with imposed natural hazards.
 Use current hazard data and Monte Carlo to simulate hazardous events in Christchurch
 and assess the change in access by using the EDE.
 
-Simulation will close destinations and certain routes based on assumptions TBC.
+Simulation determines which roads and destinations are exposed in initiialise_hazard.py and drop_raods.py
+it then closes destinations and certain routes based on a two damage state fragility curve process
+outlined in the close_destinations.py and drop_roads.py files.
+program.py will run this simulation and save results to sql
 
-Produce risk and/or fragility curves for different hazard AEPs (interpolate for more points)
-and the change in EDEs from simulations.
+Running compile_results.py will then format the big nearest_matrix to be ready for plotting
 
 ________________________________________________________________________________
 
