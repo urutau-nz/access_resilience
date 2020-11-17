@@ -83,3 +83,12 @@ Run query to create distance
 db['engine'] = create_engine('postgresql+psycopg2://postgres:' + db['passw'] + '@' + db['host'] + '/' + db['name'] + '?port=' + db['port'])
 db['address'] = "host=" + db['host'] + " dbname=" + db['name'] + " user=postgres password='"+ db['passw'] + "' port=" + db['port']
 db['con'] = psycopg2.connect(db['address'])
+
+
+
+
+christchurch Damaged Road Length in a tsunami: 493.5km
+christchurch Damaged Road Length in a liquefaction: 1137.7km
+christchurch Damaged Road Length in a multi: 1967.8km
+seattle Damaged Road Length in a liquefaction: 350.9km
+houston Damaged Road Length in a hurricane: 2040.1km
