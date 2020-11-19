@@ -15,8 +15,9 @@ def open_hazard(hazard_type, db, context):
             hazard = hazard[['Liq_Cat', 'geometry']]
             #catagorize all exposure as no, low, medium or high
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible', 'Medium Liquefaction Vulnerability'], 'med')
-            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability'], 'low')
             hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
+            hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
             #change name of column to generalise
             hazard.rename(columns={'Liq_Cat':'exposure_catagory'}, inplace=True)
 
@@ -122,8 +123,9 @@ def open_hazard(hazard_type, db, context):
         hazard = hazard[['Liq_Cat', 'geometry']]
         #catagorize all exposure as no, low, medium or high
         hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Possible', 'Medium Liquefaction Vulnerability'], 'med')
-        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely', 'Low Liquefaction Vulnerability'], 'low')
         hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['High Liquefaction Vulnerability'], 'high')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Low Liquefaction Vulnerability'], 'low')
+        hazard['Liq_Cat'] = hazard['Liq_Cat'].replace(['Liquefaction Damage is Unlikely'], 'none')
         #change name of column to generalise
         hazard.rename(columns={'Liq_Cat':'exposure_catagory'}, inplace=True)
         exposure_liq = pd.DataFrame(columns={'dest_id', 'liq_exp'})
@@ -141,19 +143,21 @@ def open_hazard(hazard_type, db, context):
         dest_gdf = pd.merge(dest_gdf, exposure_tsu, left_on='id', right_on='dest_id', how='left').drop('dest_id', axis=1)
         dest_gdf = pd.merge(dest_gdf, exposure_liq, left_on='id', right_on='dest_id', how='left').drop('dest_id', axis=1)
         dest_gdf.fillna(value='none', inplace=True)
-        #increase exposure level of dests that are exposed to both hazards. e.g low+low=med, low+med=med, med+med=high, high+med=veryhigh, high+high=veryhigh
+        #increase exposure level of dests that are exposed to both hazards. e.g low+low=med, low+med=med, med+med=high, high+med=high, high+high=veryhigh
         el = ['none', 'low', 'med', 'high', 'very_high']
         exposure_level = ['low', 'med', 'high', 'very_high']
         conditions = []
         conditions.append(((dest_gdf['tsu_exp'] == el[1]) & (dest_gdf['liq_exp'] == el[0])) | ((dest_gdf['tsu_exp'] == el[0]) & (dest_gdf['liq_exp'] == el[1])))
         conditions.append(((dest_gdf['tsu_exp'] == el[2]) & (dest_gdf['liq_exp'] == el[0])) | ((dest_gdf['tsu_exp'] == el[0]) & (dest_gdf['liq_exp'] == el[2])) | ((dest_gdf['tsu_exp'] == el[2]) & (dest_gdf['liq_exp'] == el[1])) | ((dest_gdf['tsu_exp'] == el[1]) & (dest_gdf['liq_exp'] == el[2])) | ((dest_gdf['tsu_exp'] == el[1]) & (dest_gdf['liq_exp'] == el[1])))
         conditions.append(((dest_gdf['tsu_exp'] == el[3]) & (dest_gdf['liq_exp'] == el[0])) | ((dest_gdf['tsu_exp'] == el[0]) & (dest_gdf['liq_exp'] == el[3])) | ((dest_gdf['tsu_exp'] == el[3]) & (dest_gdf['liq_exp'] == el[1])) | ((dest_gdf['tsu_exp'] == el[1]) & (dest_gdf['liq_exp'] == el[3])) | ((dest_gdf['tsu_exp'] == el[2]) & (dest_gdf['liq_exp'] == el[2])))
-        conditions.append(((dest_gdf['tsu_exp'] == el[3]) & (dest_gdf['liq_exp'] == el[3])) | ((dest_gdf['tsu_exp'] == el[0]) & (dest_gdf['liq_exp'] == el[4])) | ((dest_gdf['tsu_exp'] == el[3]) & (dest_gdf['liq_exp'] == el[2])) | ((dest_gdf['tsu_exp'] == el[2]) & (dest_gdf['liq_exp'] == el[3])))
+        conditions.append(((dest_gdf['tsu_exp'] == el[3]) & (dest_gdf['liq_exp'] == el[3])) | ((dest_gdf['tsu_exp'] == el[0]) & (dest_gdf['liq_exp'] == el[4])))
         dest_gdf.rename(columns={'id':'dest_id'}, inplace=True)
         dest_gdf['exposure'] = np.select(conditions, exposure_level)
+        #removes rows with no exposure
         exposure_df = dest_gdf.loc[dest_gdf['exposure'] != '0']
+        #remove unnecessary columns
         exposure_df = exposure_df[['dest_id', 'exposure']]
 
-    #f|mat exposure_df
+    #format exposure_df
     exposure_df.reset_index(inplace=True, drop=True)
     return exposure_df

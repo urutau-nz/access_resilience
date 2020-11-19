@@ -27,20 +27,20 @@ def main(state, hazard):
     services = context['services']
     demo.rename(columns={'total':'total_pop'}, inplace=True)
     pop_groups = demo.columns[1:]
-    if context['country'] == 'nz': #removes african american column for NZ, which is currently 0
+    if context['country'] == 'nz': #removes african american population type for nz
         pop_groups = pop_groups[:-1]
-    #refine nearest_matrix to remove rows without access
+    #openup result csv (obtained from runnning compile_results.py)
     refined_nearest = pd.read_csv('/homedirs/dak55/monte_christchurch/results/results_{}_{}.csv'.format(state, hazard))
-    #set up results df
+    #set up df to fill with ede results
     results_df = pd.DataFrame(columns=['sim_ede', 'base_ede', 'sim_mean', 'base_mean', 'dest_type', 'population_group', 'state', 'hazard'])
-    #find ede and mean for simulations
+    #find ede and mean for simulations & baseline cases
     for pop_group in pop_groups:
         sim_ede = []
         sim_average = []
         base_ede = []
         base_average = []
         for service in services:
-            #pick out services that are open
+            #pick out blocks that are not isolated for this particular service
             subset = refined_nearest.loc[refined_nearest['isolated_{}'.format(service)] == False]
             #sim edes
             demo_group = subset['{}'.format(pop_group)]
@@ -52,6 +52,7 @@ def main(state, hazard):
             demo_group = demo[pop_group]
             base_ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
             base_average.append(np.average(distances, weights=demo_group))
+        #fill results into dict and then append to df
         dict = {'sim_ede':sim_ede, 'base_ede':base_ede, 'sim_mean':sim_average, 'base_mean':base_average, 'dest_type':services, 'population_group':pop_group, 'state':state, 'hazard':hazard}
         df = pd.DataFrame(dict)
         results_df = results_df.append(df, ignore_index=True)
@@ -60,44 +61,44 @@ def main(state, hazard):
     results_df.reset_index(inplace=True, drop=True)
     return results_df
 
-
-def kp_ede_main(demo, nearest_service, context):
-    '''calculates an ede for each pop group for the given nearest_distance matrix'''
-    results_df = pd.DataFrame(columns=['ede', 'mean', 'dest_type', 'population_group'])
+def income_main(state, hazard):
+    '''return the ede for each income group and service'''
+    #open up required tables
+    db, context = cfg_init(state)
+    baseline_nearest = pd.read_sql("SELECT * FROM baseline_nearest", db['con'])
+    baseline_nearest['id_orig'] = baseline_nearest['id_orig'].astype(int)
     services = context['services']
-    #removes gid and median_age columns, we are only interested in population groups
-    pop_groups = demo.columns
-    index = [0]
-    if context['country'] == 'nz': #removes african american column for NZ, which is currently 0
-        index.append(-1)
-    pop_groups = np.delete(pop_groups, index)
-
-    #remove rows with 0 population from each df
-    zero_pop = demo.loc[demo['total'] == 0]
-    zero_pop_id_flt = zero_pop['id_orig'].tolist()
-    #convert to ints
-    zero_pop_id_int = [int(i) for i in zero_pop_id_flt]
-    #convert to str
-    zero_pop_id_str = [str(i) for i in zero_pop_id_int]
-    nearest_service = nearest_service[~nearest_service['id_orig'].isin(zero_pop_id_str)]
-    demo = demo[~demo['id_orig'].isin(zero_pop_id_flt)]
-
-    for pop_group in pop_groups:
-        ede = []
-        average = []
+    #openup result csv (obtained from runnning compile_results.py)
+    refined_nearest = pd.read_csv('/homedirs/dak55/monte_christchurch/results/results_{}_{}_income.csv'.format(state, hazard))
+    #select only the income columns
+    income_groups = refined_nearest.columns[-7:]
+    baseline_nearest = baseline_nearest[baseline_nearest['id_orig'].isin(refined_nearest.id_orig)]
+    #set up df to fill with ede results
+    results_df = pd.DataFrame(columns=['sim_ede', 'base_ede', 'sim_mean', 'base_mean', 'dest_type', 'income_group', 'state', 'hazard'])
+    #find ede and mean for simulations
+    for income_group in income_groups:
+        sim_ede = []
+        sim_average = []
+        base_ede = []
+        base_average = []
         for service in services:
-            service_subset = nearest_service.loc[nearest_service['dest_type'] == service]
-            distances = service_subset['distance']
-            if 'C' in demo[pop_group]:
-                demo_group = demo[pop_group].replace(['C'], 0).apply(lambda x: np.int64(x))
-            else:
-                demo_group = demo[pop_group]
-            ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
-            average.append(np.average(distances, weights=demo_group))
-        dict = {'ede':ede, 'mean':average, 'dest_type':services, 'population_group':pop_group}
+            #pick out services that are not isolated
+            subset = refined_nearest.loc[refined_nearest['isolated_{}'.format(service)] == False]
+            #sim edes
+            income_weight = subset['{}'.format(income_group)]
+            distances = subset['mean_{}'.format(service)]
+            sim_ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=income_weight))
+            sim_average.append(np.average(distances, weights=income_weight))
+            #base edes
+            distances = baseline_nearest.loc[baseline_nearest['dest_type'] == service].distance
+            income_weight = refined_nearest[income_group]
+            base_ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=income_weight))
+            base_average.append(np.average(distances, weights=income_weight))
+        #fill dict with results then append to csv
+        dict = {'sim_ede':sim_ede, 'base_ede':base_ede, 'sim_mean':sim_average, 'base_mean':base_average, 'dest_type':services, 'income_group':income_group, 'state':state, 'hazard':hazard}
         df = pd.DataFrame(dict)
         results_df = results_df.append(df, ignore_index=True)
-    results_df.sort_values(inplace=True, by=['dest_type', 'population_group'])
+
     results_df.reset_index(inplace=True, drop=True)
     return results_df
 
@@ -139,10 +140,10 @@ def calc_kappa(a, beta, weights = None):
     return(kappa)
 
 
-df = main('ch', 'multi')
-df = df.append(main('ch', 'liquefaction'), ignore_index=True)
-df = df.append(main('ch', 'tsunami'), ignore_index=True)
-df = df.append(main('tx', 'hurricane'), ignore_index=True)
-df = df.append(main('wa', 'liquefaction'), ignore_index=True)
-#code.interact(local=locals())
-df.to_csv('results/ede_results.csv')
+df = income_main('ch', 'multi_10')
+df = df.append(income_main('ch', 'liquefaction'), ignore_index=True)
+df = df.append(income_main('ch', 'tsunami'), ignore_index=True)
+
+#check results and then send to csv
+code.interact(local=locals())
+df.to_csv('results/income_ede_results.csv')

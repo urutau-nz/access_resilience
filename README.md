@@ -9,9 +9,18 @@ Using Monte Carlo Simulation, this approach allows urban planners to evaluate ac
 This enables the identification of (1) potentially vulnerable communities or demographic groups, and
 (2) critical amenity nodes or transport links. This will also aid (1) vulnerability assessments, (2) pre and post hazard investment prioritisation
 
+<<<<<<< HEAD
 ###### Data Inputs:
 
 (1) Block Level Demographic Data
+=======
+Simulation determines which roads and destinations are exposed in initiialise_hazard.py and drop_raods.py
+it then closes destinations and certain routes based on a two damage state fragility curve process
+outlined in the close_destinations.py and drop_roads.py files.
+program.py will run this simulation and save results to sql
+
+Running compile_results.py will then format the big nearest_matrix to be ready for plotting
+>>>>>>> 6dcfc583694a33c172dcd1a12325a23854258b71
 
 (2) OSM Transport Network
 
