@@ -35,7 +35,7 @@ def main(state):
     db['con'].close()
 
 
-def query_points(closed_ids, db, context):
+def query_points(closed_ids, db, context, optimise_service=None):
     '''
     query OSRM for distances between origins and destinations
     '''
@@ -59,7 +59,11 @@ def query_points(closed_ids, db, context):
         orig_df = orig_df.set_index('geoid10')
         orig_df.sort_values(by=['geoid10'], inplace=True)
     # get list of destination ids
-    sql = "SELECT * FROM destinations"
+    #sql = "SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')"
+    if optimise_service == None:
+        sql = "SELECT * FROM destinations"
+    else:
+        sql = "SELECT * FROM destinations WHERE dest_type='{}'".format(optimise_service)
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
     dest_df = dest_df.loc[~dest_df['id'].isin(closed_ids)]

@@ -24,7 +24,7 @@ def dests_to_drop(exposure_df, hazard_type, db, context):
     for i in range(len(damage_threshold)):
         to_shut = exposure_df.loc[(exposure_df['exposure'] == exposure_level[i]) & (exposure_df['damage'] > damage_threshold[i])]
         closed_ids.extend(to_shut['dest_id'].tolist())
-    #this excludes the downtown 'destination', which is not really relevant for our investigations
+    #this excludes the downtown 'destination', which is not relevant for our investigation
     if 0 not in closed_ids:
         closed_ids.append(0)
     return closed_ids

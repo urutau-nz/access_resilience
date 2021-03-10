@@ -7,31 +7,33 @@ Save to a csv
 from config import *
 import init_osrm
 
-def close_rd(exposed_roads, state, hazard_type, db, context):
-    #set hypothetical damage level for each building
-    damage_level = np.random.uniform(size=len(exposed_roads))
-    exposed_roads['damage'] = damage_level
-    exposure_level = ['low', 'med', 'high']
+def close_rd(exposed_roads, state, hazard_type, db, context, sim_num):
+    if hazard_type == 'hurricane':
+        roads_effected = exposed_roads[(exposed_roads['exposure'] == 'closed')]
+    else:
+        damage_level = np.random.uniform(size=len(exposed_roads))
+        exposed_roads['damage'] = damage_level
+        exposure_level = ['low', 'med', 'high']
 
-    if hazard_type in ['tsunami', 'hurricane']:
-        damage_threshold = [0.9, 0.6, 0.2]
-    elif hazard_type == 'liquefaction':
-        damage_threshold = [0.95, 0.7, 0.25]
-    elif hazard_type == 'multi':
-        damage_threshold = [0.85, 0.55, 0.15, 0.05]
+        if hazard_type in ['tsunami', 'hurricane']:
+            damage_threshold = [0.9, 0.6, 0.2]
+        elif hazard_type == 'liquefaction':
+            damage_threshold = [0.95, 0.7, 0.25]
+        elif hazard_type == 'multi':
+            damage_threshold = [0.85, 0.55, 0.15, 0.05]
 
-    conditions = [
-    (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] >= damage_threshold[0]),
-    (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] >= damage_threshold[1]),
-    (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] >= damage_threshold[2]),
-    (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] <= damage_threshold[0]),
-    (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] <= damage_threshold[1]),
-    (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] <= damage_threshold[2])]
+        conditions = [
+        (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] >= damage_threshold[0]),
+        (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] >= damage_threshold[1]),
+        (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] >= damage_threshold[2]),
+        (exposed_roads['exposure'] == exposure_level[0]) & (exposed_roads['damage'] <= damage_threshold[0]),
+        (exposed_roads['exposure'] == exposure_level[1]) & (exposed_roads['damage'] <= damage_threshold[1]),
+        (exposed_roads['exposure'] == exposure_level[2]) & (exposed_roads['damage'] <= damage_threshold[2])]
 
-    values = ['True','True','True','False','False','False']
-    exposed_roads['closed'] = np.select(conditions, values)
+        values = ['True','True','True','False','False','False']
+        exposed_roads['closed'] = np.select(conditions, values)
 
-    roads_effected = exposed_roads[(exposed_roads['closed'] == 'True')]
+        roads_effected = exposed_roads[(exposed_roads['closed'] == 'True')]
 
     # make list of from and to OSM IDs
     df = pd.DataFrame()
@@ -48,6 +50,8 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
 
     # set edge speeds
     df['edge_speed'] = 0
+    # set sim num
+    df['sim_num'] = sim_num
 
     df.to_csv(r'/homedirs/man112/osm_data/updates/update.csv', header=False, index=False)
 
@@ -57,7 +61,7 @@ def close_rd(exposed_roads, state, hazard_type, db, context):
     init_osrm.main(sim, state, context)
 
     # re query
-    return(exposed_roads)
+    return(exposed_roads, roads_effected)
 
 def open_hazard(hazard_type, db, context):
     '''opens and formats hazard'''
@@ -65,6 +69,7 @@ def open_hazard(hazard_type, db, context):
     edges = gpd.read_file(r'/homedirs/man112/monte_christchurch/data/{}/road_edges/edges.shp'.format(context['city']))
     if context['city'] == 'christchurch':
         edges.rename(columns={'from_':'from'}, inplace=True)
+    edges = edges.to_crs("EPSG:4269")
 
     if hazard_type == 'liquefaction':
         if context['city'] == 'christchurch':
@@ -120,9 +125,9 @@ def open_hazard(hazard_type, db, context):
         #change from ft to m
         edges['inundation_depth'] = edges['inundation_depth'] * 0.3048
         #low, medium, high catagories for discrete fragility curve
-        bands = [(0, 0.25), (0.25, 0.5), (0.5, 2), (2, 1000)]
-        exposure_level = ['none', 'low', 'med', 'high']
-        conditions = [(edges['inundation_depth'] <= bands[0][1]), (edges['inundation_depth'] > bands[1][0]) & (edges['inundation_depth'] <= bands[1][1]), (edges['inundation_depth'] > bands[2][0]) & (edges['inundation_depth'] <= bands[2][1]), (edges['inundation_depth'] > bands[3][0])]
+        inundation_limit = 0.3 # meters
+        exposure_level = ['open', 'closed']
+        conditions = [(edges['inundation_depth'] < inundation_limit), (edges['inundation_depth'] >= inundation_limit)]
         edges['exposure'] = np.select(conditions, exposure_level)
 
     elif hazard_type == 'multi': #only available for chch at this stage

@@ -139,10 +139,10 @@ def calc_kappa(a, beta, weights = None):
     return(kappa)
 
 
-df = main('ch', 'multi')
-df = df.append(main('ch', 'liquefaction'), ignore_index=True)
-df = df.append(main('ch', 'tsunami'), ignore_index=True)
-df = df.append(main('tx', 'hurricane'), ignore_index=True)
-df = df.append(main('wa', 'liquefaction'), ignore_index=True)
-#code.interact(local=locals())
-df.to_csv('results/ede_results.csv')
+# df = main('ch', 'multi')
+# df = df.append(main('ch', 'liquefaction'), ignore_index=True)
+# df = df.append(main('ch', 'tsunami'), ignore_index=True)
+# df = df.append(main('tx', 'hurricane'), ignore_index=True)
+# df = df.append(main('wa', 'liquefaction'), ignore_index=True)
+# #code.interact(local=locals())
+# df.to_csv('results/ede_results.csv')

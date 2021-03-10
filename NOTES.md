@@ -83,3 +83,10 @@ Run query to create distance
 db['engine'] = create_engine('postgresql+psycopg2://postgres:' + db['passw'] + '@' + db['host'] + '/' + db['name'] + '?port=' + db['port'])
 db['address'] = "host=" + db['host'] + " dbname=" + db['name'] + " user=postgres password='"+ db['passw'] + "' port=" + db['port']
 db['con'] = psycopg2.connect(db['address'])
+
+
+
+
+300 mm is the average depth at which a passenger vehicles starts to float, and therefore widely recognised as the ultimate thresholds for a safety drive for most of the common cars. https://www.sciencedirect.com/science/article/pii/S1361920916308367
+600 mm Maximum wading depth for special vehicles.
+
