@@ -34,7 +34,7 @@ def cfg_init(state):
     db = dict()
     db['passw'] = open('pass.txt', 'r').read().strip('\n')
     db['host'] = '132.181.102.2'
-    db['port'] = '5001'
+    db['port'] = '5002'
     # city information
     context = dict()
     # CHRISTCHURCH

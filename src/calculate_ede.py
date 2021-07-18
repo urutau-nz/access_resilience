@@ -30,7 +30,12 @@ def main(state, hazard):
     if context['country'] == 'nz': #removes african american column for NZ, which is currently 0
         pop_groups = pop_groups[:-1]
     #refine nearest_matrix to remove rows without access
-    refined_nearest = pd.read_csv('/homedirs/dak55/monte_christchurch/results/results_{}_{}.csv'.format(state, hazard))
+    refined_nearest = pd.read_csv('/homedirs/man112/monte_christchurch/results/results_{}_{}.csv'.format(state, hazard))
+    refined_nearest = refined_nearest[refined_nearest['total_pop'] != 0]
+    if state == 'ch':
+        refined_nearest = refined_nearest.rename({'indigenous':'maori', 'latino':'melaa'}, axis=1)
+    else:
+        refined_nearest = refined_nearest.rename({'indigenous':'american_indian_or_alaska', 'polynesian':'native_hawaiian_or_pi'}, axis=1)
     #set up results df
     results_df = pd.DataFrame(columns=['sim_ede', 'base_ede', 'sim_mean', 'base_mean', 'dest_type', 'population_group', 'state', 'hazard'])
     #find ede and mean for simulations
@@ -39,9 +44,19 @@ def main(state, hazard):
         sim_average = []
         base_ede = []
         base_average = []
+        population = []
+        num_iso = []
         for service in services:
             #pick out services that are open
+            population.append(refined_nearest['{}'.format(pop_group)].sum())
+            iso_subset = refined_nearest.loc[refined_nearest['isolated_{}'.format(service)] == True]
+            num_iso.append(iso_subset['{}'.format(pop_group)].sum())
             subset = refined_nearest.loc[refined_nearest['isolated_{}'.format(service)] == False]
+            # remove outliers
+            Q1 = subset['mean_{}'.format(service)].quantile(0.25)
+            Q3 = subset['mean_{}'.format(service)].quantile(0.75)
+            IQR = Q3 - Q1
+            subset = subset[subset['mean_{}'.format(service)] < (Q3 + 2 * IQR)]
             #sim edes
             demo_group = subset['{}'.format(pop_group)]
             distances = subset['mean_{}'.format(service)]
@@ -52,7 +67,7 @@ def main(state, hazard):
             demo_group = demo[pop_group]
             base_ede.append(kolm_pollak_ede(a=distances, beta=-0.5, weights=demo_group))
             base_average.append(np.average(distances, weights=demo_group))
-        dict = {'sim_ede':sim_ede, 'base_ede':base_ede, 'sim_mean':sim_average, 'base_mean':base_average, 'dest_type':services, 'population_group':pop_group, 'state':state, 'hazard':hazard}
+        dict = {'sim_ede':sim_ede, 'base_ede':base_ede, 'sim_mean':sim_average, 'base_mean':base_average, 'dest_type':services, 'population_group':pop_group, 'population':population, 'number_isolated':num_iso, 'state':state, 'hazard':hazard}
         df = pd.DataFrame(dict)
         results_df = results_df.append(df, ignore_index=True)
 
@@ -139,10 +154,10 @@ def calc_kappa(a, beta, weights = None):
     return(kappa)
 
 
-# df = main('ch', 'multi')
-# df = df.append(main('ch', 'liquefaction'), ignore_index=True)
-# df = df.append(main('ch', 'tsunami'), ignore_index=True)
-# df = df.append(main('tx', 'hurricane'), ignore_index=True)
-# df = df.append(main('wa', 'liquefaction'), ignore_index=True)
-# #code.interact(local=locals())
-# df.to_csv('results/ede_results.csv')
+df = main('ch', 'multi')
+df = df.append(main('ch', 'liquefaction'), ignore_index=True)
+df = df.append(main('ch', 'tsunami'), ignore_index=True)
+df = df.append(main('tx', 'hurricane'), ignore_index=True)
+df = df.append(main('wa', 'liquefaction'), ignore_index=True)
+#code.interact(local=locals())
+df.to_csv('results/ede_results.csv')

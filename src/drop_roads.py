@@ -15,7 +15,7 @@ def close_rd(exposed_roads, state, hazard_type, db, context, sim_num):
         exposed_roads['damage'] = damage_level
         exposure_level = ['low', 'med', 'high']
 
-        if hazard_type in ['tsunami', 'hurricane']:
+        if hazard_type == 'tsunami':
             damage_threshold = [0.9, 0.6, 0.2]
         elif hazard_type == 'liquefaction':
             damage_threshold = [0.95, 0.7, 0.25]
@@ -167,3 +167,60 @@ def open_hazard(hazard_type, db, context):
         edges['exposure'] = np.select(conditions, exposure_level)
 
     return(edges)
+
+
+
+
+
+
+
+
+import numpy as np
+import rasterio
+from rasterio.warp import calculate_default_transform, reproject, Resampling
+
+dst_crs = 'EPSG:4326'
+
+with rio.open('/homedirs/man112/monte_christchurch/data/christchurch/hazard/18 1306918  LDRP 45 SLR Scenarios GIS Files 10122018 groundwater ~ with sea level rise climate change post earthquake AQUALINC DELIVERABLE(2)/X0_40_slr_dtw41.tif') as src:
+    transform, width, height = calculate_default_transform(
+        src.crs, dst_crs, src.width, src.height, *src.bounds)
+    kwargs = src.meta.copy()
+    kwargs.update({
+        'crs': dst_crs,
+        'transform': transform,
+        'width': width,
+        'height': height
+    })
+
+    with rasterio.open('/homedirs/man112/monte_christchurch/data/christchurch/hazard/18 1306918  LDRP 45 SLR Scenarios GIS Files 10122018 groundwater ~ with sea level rise climate change post earthquake AQUALINC DELIVERABLE(2)/X0_40_slr_dtw41.tif', 'w', **kwargs) as dst:
+        for i in range(1, src.count + 1):
+            reproject(
+                source=rasterio.band(src, i),
+                destination=rasterio.band(dst, i),
+                src_transform=src.transform,
+                src_crs=src.crs,
+                dst_transform=transform,
+                dst_crs=dst_crs,
+                resampling=Resampling.nearest)
+
+def reproject_raster(in_path, out_path):
+    with rio.open(in_path) as src:
+        src_crs = src.crs
+        transform, width, height = calculate_default_transform(src_crs, crs, src.width, src.height, *src.bounds)
+        kwargs = src.meta.copy()
+        kwargs.update({
+            'crs': crs,
+            'transform': transform,
+            'width': width,
+            'height': height})
+        with rio.open(out_path, 'w', **kwargs) as dst:
+            for i in range(1, src.count + 1):
+                reproject(
+                    source=rio.band(src, i),
+                    destination=rio.band(dst, i),
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=transform,
+                    dst_crs=crs,
+                    resampling=Resampling.nearest)
+    return(out_path)

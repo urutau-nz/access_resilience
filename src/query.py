@@ -43,6 +43,7 @@ def query_points(closed_ids, db, context, optimise_service=None):
     cursor = db['con'].cursor()
 
     # get list of all origin ids
+    #sql = "SELECT * FROM block"
     sql = "SELECT * FROM block"
     orig_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
@@ -59,15 +60,17 @@ def query_points(closed_ids, db, context, optimise_service=None):
         orig_df = orig_df.set_index('geoid10')
         orig_df.sort_values(by=['geoid10'], inplace=True)
     # get list of destination ids
-    #sql = "SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')"
-    if optimise_service == None:
-        sql = "SELECT * FROM destinations"
-    else:
-        sql = "SELECT * FROM destinations WHERE dest_type='{}'".format(optimise_service)
+    sql = "SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')"
+    # if not optimise_service:
+    #     sql = "SELECT * FROM ch_destinations"
+    # else:
+    #     sql = "SELECT * FROM destinations WHERE dest_type='{}'".format(optimise_service)
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
-
+    #dest_df = gpd.read_file(r'data/dests/chch_dests.csv')
+    #dest_df['id'] = np.arange(0,len(dest_df))
     dest_df = dest_df.loc[~dest_df['id'].isin(closed_ids)]
     dest_df = dest_df.set_index('id')
+    #dest_df = orig_df
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
     # list of origxdest pairs
@@ -76,6 +79,7 @@ def query_points(closed_ids, db, context, optimise_service=None):
     # df of durations, distances, ids, and co-ordinates
 
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
+    #origxdest.to_csv('edge_origin_distances.csv')
     return origxdest
 
 def write_to_postgres(df, db, table_name, indices=True):
@@ -153,7 +157,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         # append to list of queries
         query_list.append(query_string)
     # # Table Query OSRM in parallel
-    par_frac = 0.9
+    par_frac = 0.8
 
     #define cpu usage
     num_workers = np.int(mp.cpu_count() * par_frac)
@@ -169,3 +173,4 @@ def req(query_string):
     response = requests.get(query_string).json()
     temp_dist = [item for sublist in response['distances'] for item in sublist]
     return temp_dist
+

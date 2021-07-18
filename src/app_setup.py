@@ -2,6 +2,7 @@
 Takes raw and process results and formats them for the access-resilience app
 '''
 
+from numpy.core.shape_base import block
 from config import *
 import shapely
 
@@ -36,8 +37,34 @@ def format_blocks():
     sql = "SELECT geom, {} FROM block".format(block_id)
     blocks = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
+    blocks = blocks.sort_values(by=block_id, axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+
+    blocks[block_id] = blocks[block_id].astype(int).tolist()
+
+    if block_id == 'geoid10':
+        #opening total population stats for each block
+        sql = """SELECT "H7X001", geoid10 FROM demograph"""
+        demo_df = pd.read_sql(sql, db['con'])
+        #orders by geoid and sets it as the index
+        demo_df = demo_df.sort_values(by=block_id, axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        zero_pop = demo_df.loc[demo_df['H7X001'] == 0]
+        zero_pop_id_int = zero_pop[block_id].astype(int).tolist()
+        blocks = blocks[~blocks[block_id].isin(zero_pop_id_int)]
+    else:
+        #opening total population stats for each block
+        sql = """SELECT "population", gid FROM census_18"""
+        demo_df = pd.read_sql(sql, db['con'])
+        demo_df = demo_df.rename(columns={'gid':block_id})
+        #orders by geoid and sets it as the index
+        demo_df = demo_df.sort_values(by=block_id, axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        zero_pop = demo_df.loc[demo_df['population'] == 0]
+        zero_pop = zero_pop.dropna()
+        zero_pop_id_int = zero_pop[block_id].astype(int).tolist()
+        blocks = blocks[~blocks[block_id].isin(zero_pop_id_int)]
+
     blocks[block_id] = blocks[block_id].astype(int)
-    blocks = blocks.set_index(block_id)
+    blocks = blocks.rename(columns={block_id:'id_orig'})
+    blocks = blocks.set_index('id_orig')
 
     blocks = blocks.to_crs("EPSG:4326")
 
@@ -53,6 +80,7 @@ def format_edges():
     city = context['city']
     from_col = 'from'
     if state == 'ch':
+        city = 'christchurch'
         from_col = 'from_'
         hazard = int(input('What Hazard: (1)Tsunami, (2)Liquefaction, (3)Multi: '))
         if hazard == 1:
@@ -62,41 +90,47 @@ def format_edges():
         elif hazard == 3:
             hazard = 'multi'
     elif state == 'wa':
+        city = 'seattle'
         hazard = 'liquefaction'
     elif state =='tx':
+        city = 'houston'
         hazard = 'hurricane'
 
     edges = gpd.read_file(r'data/{}/road_edges/edges.shp'.format(city))
-    updates = pd.read_csv(r'data/{}_{}_update.csv'.format(state, hazard), names=["from_", "to", "speed"])
+    updates = pd.read_csv(r'data/{}_{}_update.csv'.format(state, hazard), names=['from_', "to", "speed"])
     from_ids = updates['from_'].tolist()
     to_ids = updates['to'].tolist()
     edges = edges.to_crs("EPSG:4326")
     edges = edges[['osmid', from_col, 'to', 'geometry']]
     edges = edges[edges[from_col].isin(from_ids) & edges['to'].isin(to_ids)]
-    m_edges = edges.to_crs("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs")
-    road_length = m_edges.geometry.length.sum()/1000
-    print('{} Damaged Road Length in a {}: {}km'.format(city, hazard, np.round(road_length, 1)))
+    edges = edges.drop(columns=['osmid', from_col, 'to'])
+    with open("plotly/{}_{}_road.geojson".format(city, hazard), "wt") as tf:
+        tf.write(edges.to_json())
+
+    # m_edges = edges.to_crs("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs")
+    # road_length = m_edges.geometry.length.sum()/1000
+    # print('{} Damaged Road Length in a {}: {}km'.format(city, hazard, np.round(road_length, 1)))
 
 
-    lats = []
-    lons = []
-    names = []
-    for feature in edges.geometry:
-        if isinstance(feature, shapely.geometry.linestring.LineString):
-            linestrings = [feature]
-        elif isinstance(feature, shapely.geometry.multilinestring.MultiLineString):
-            linestrings = feature.geoms
-        else:
-            continue
-        for linestring in linestrings:
-            x, y = linestring.xy
-            lats = np.append(lats, y)
-            lons = np.append(lons, x)
-            lats = np.append(lats, None)
-            lons = np.append(lons, None)
+    # lats = []
+    # lons = []
+    # names = []
+    # for feature in edges.geometry:
+    #     if isinstance(feature, shapely.geometry.linestring.LineString):
+    #         linestrings = [feature]
+    #     elif isinstance(feature, shapely.geometry.multilinestring.MultiLineString):
+    #         linestrings = feature.geoms
+    #     else:
+    #         continue
+    #     for linestring in linestrings:
+    #         x, y = linestring.xy
+    #         lats = np.append(lats, y)
+    #         lons = np.append(lons, x)
+    #         lats = np.append(lats, None)
+    #         lons = np.append(lons, None)
 
-    np.save(r'plotly/{}_{}_lat_edges'.format(state, hazard), lats)
-    np.save(r'plotly/{}_{}_lon_edges'.format(state, hazard), lons)
+    # np.save(r'plotly/{}_{}_lat_edges'.format(state, hazard), lats)
+    # np.save(r'plotly/{}_{}_lon_edges'.format(state, hazard), lons)
 
 
 

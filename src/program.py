@@ -10,6 +10,9 @@ from close_destinations import *
 import drop_roads
 import init_osrm
 
+state = 'ch' #input('State: ')
+hazard_type = 'tsunami' #input("hazard: ") #'hurricane'#'multi'#'liquefaction'#'liquefaction'
+
 def main_function(state):
     '''main'''
     #initialise config
@@ -23,19 +26,18 @@ def main_function(state):
     baseline_distance = query_points(dest_ids, db, context)
     baseline_nearest = find_nearest_service(baseline_distance, dest_ids, db, context)
     #intilise hazard, df to save and find dests exposed at each fragility level
-    hazard_type = 'hurricane'#'multi'#'liquefaction'#'liquefaction'
     exposure_df = initialise_hazard.open_hazard(hazard_type, db, context)
     # get gpd df of roads with inundation depths and damage bands
     exposed_roads = drop_roads.open_hazard(hazard_type, db, context)
     nearest_matrix = pd.DataFrame(columns=['id_orig', 'distance', 'dest_type', 'sim_num'])
-    #df_roads = pd.DataFrame(columns=['from_osmid', 'to_osmid', 'edge_speed', 'sim_num'])
+    df_roads = pd.DataFrame(columns=['from_osmid', 'to_osmid', 'edge_speed', 'sim_num'])
     df_roads = gpd.read_file(r'/homedirs/man112/monte_christchurch/data/{}/road_edges/edges.shp'.format(context['city']))
     df_roads['sim_num'] = 0
     df_roads['num_closed'] = 0
     df_roads = df_roads.drop(columns=['geometry'])
     if context['city'] == 'christchurch':
         df_roads.rename(columns={'from_':'from'}, inplace=True)
-    #df_dests = gpd.GeoDataFrame.from_postgis("SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')", db['con'], geom_col='geom')
+    df_dests = gpd.GeoDataFrame.from_postgis("SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')", db['con'], geom_col='geom')
     df_dests = gpd.GeoDataFrame.from_postgis("SELECT * FROM destinations", db['con'], geom_col='geom')
     df_dests = df_dests.drop(columns=['geom'])
     df_dests = df_dests.set_index('id')
@@ -110,7 +112,6 @@ def query_baseline(state):
     write_to_postgres(baseline_nearest, db, 'baseline_nearest', indices=False)
 
 #if __name__ == "__main__":
-state = 'tx'#input('State: ')
 #query_baseline(state)
 main_function(state)
 

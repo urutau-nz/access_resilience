@@ -43,7 +43,7 @@ Make database in SQL and ready it for gis
   CREATE EXTENSION postgis;
 
 Upload block to SQL
-shp2pgsql -I -s 4269 /homedirs/man112/monte_christchurch/data/chc_bound/chch_mb.shp block | psql -U postgres -d monte_christchurch -h 132.181.102.2 -p 5001
+shp2pgsql -I -s 4269 /homedirs/man112/monte_christchurch/data/chc_bound/chch_meshblock.shp block_06 | psql -U postgres -d access_nz_chc -h 132.181.102.2 -p 5001
 
 Get Destination data from overpass turbo (https://overpass-turbo.eu/), download as KML
 

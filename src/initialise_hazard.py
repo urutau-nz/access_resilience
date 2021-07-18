@@ -79,7 +79,7 @@ def open_hazard(hazard_type, db, context):
         #change from ft to m
         dest_gdf['inundation_depth'] = dest_gdf['inundation_depth'] * 0.3048
         #low, medium, high catagories for discrete fragility curve
-        bands = [(0, 0.5), (0.5, 2), (2, 1000)]
+        bands = [(0, 0.15), (0.15, 0.5), (0.5, 1000)]
         exposure_level = ['low', 'med', 'high']
         for i in range(0, 3):
             #subset dests that are exposed at particular level
