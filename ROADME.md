@@ -1,4 +1,4 @@
-# How to drop roads in OSRM
+ # How to drop roads in OSRM
 
 1. Using OSMNX in python, enter the following to get a shapefile of nodes and road edges:
 ```
