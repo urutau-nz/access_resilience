@@ -77,7 +77,7 @@ def query_points(closed_ids, db, context, optimise_service=None):
     origxdest = pd.DataFrame(list(itertools.product(orig_df.index, dest_df.index)), columns = ['id_orig','id_dest'])
     origxdest['distance'] = None
     # df of durations, distances, ids, and co-ordinates
-
+    print('executing table query')
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
     #origxdest.to_csv('edge_origin_distances.csv')
     return origxdest
@@ -177,7 +177,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
     options_string_base = '?annotations=distance' #'?annotations=duration,distance'
     # loop through the sets of
     orig_sets = [(i, min(i+orig_per_batch, orig_n)) for i in range(0,orig_n,orig_per_batch)]
-
+    print('making query strings')
     # create a list of queries
     query_list = []
     for i in orig_sets:
@@ -197,14 +197,15 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         # append to list of queries
         query_list.append(query_string)
     # # Table Query OSRM in parallel
-    par_frac = 1
-
+    par_frac = 0.9
+    print('parallel query')
     #define cpu usage
     num_workers = np.int(mp.cpu_count() * par_frac)
     #gets list of tuples which contain 1list of distances and 1list
     results = Parallel(n_jobs=num_workers)(delayed(req)(query_string) for query_string in query_list)
     # get the results in the right format
     #dists = [l for orig in results for l in orig[0]] was giving errors so i rewrote
+    print('formating results')
     dists = [result for query in results for result in query]
     origxdest['distance'] = dists
     return(origxdest)

@@ -126,12 +126,14 @@ def init_random(df_options, results, demo, road_options):
         # set timestep, starts at 1
         time = i + 1
         # reset osrm server
+        print('resetting osrm')
         init_osrm.main(False, state, context)
         # pick random option
         best_index = np.random.randint(0,len(df_options))
         best_id = df_options['option_id'].iloc[best_index]
         best_type = df_options['type'].iloc[best_index]
         # execute the best option & remove that option from appearing in future
+        print('determining best type')
         if best_type == 'service':
             # get the option ID
             #df_option_id = list(df_options[(df_options['type']=='service') & (df_options['option_id']==best_id)].index)[0] ## TRY USE BEST ID
@@ -150,22 +152,29 @@ def init_random(df_options, results, demo, road_options):
             close_rd(temp_roads, db, context)
             # sets destionations to close - should be all those within df_options
             dest_ids = list(df_options[df_options['type']=='service']['option_id'])
+        print('querying post option distances')
         # get access stats from greedy choice
         distance_matrix = query_points(dest_ids, db, context, optimise_service)
         # refines to nearest
+        print('nearest')
         baseline_nearest = find_nearest_service(distance_matrix, dest_ids, db, context)
         # combine with demographic data
+        print('combine demo')
         baseline_nearest = combine_demo_dist(baseline_nearest, demo, False)
         # gets temp results
+        print('EDEs')
         temp_results = make_temp_results(time, baseline_nearest, best_type, best_id)
         # updates results
         temp_df = pd.Series(temp_results, index = results.columns)
         # updates results
         results = results.append(temp_df, ignore_index=True)
         # removes used option from df_options
+        print('resetting df options')
         df_options = df_options.drop(list(df_options[(df_options['type']==best_type) & (df_options['option_id']==best_id)].index))
         df_options = df_options.reset_index(drop=True)
         road_options = temp_roads
+        if len(df_options) == 100:
+            x=1
     # returns results
     return(results)
 
