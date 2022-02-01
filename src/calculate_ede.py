@@ -69,7 +69,7 @@ def income_main(state, hazard):
     baseline_nearest['id_orig'] = baseline_nearest['id_orig'].astype(int)
     services = context['services']
     #openup result csv (obtained from runnning compile_results.py)
-    refined_nearest = pd.read_csv('/homedirs/dak55/monte_christchurch/results/results_{}_{}_income.csv'.format(state, hazard))
+    refined_nearest = pd.read_csv('results/results_{}_{}_income.csv'.format(state, hazard))
     #select only the income columns
     income_groups = refined_nearest.columns[-7:]
     baseline_nearest = baseline_nearest[baseline_nearest['id_orig'].isin(refined_nearest.id_orig)]
@@ -145,5 +145,5 @@ df = df.append(income_main('ch', 'liquefaction'), ignore_index=True)
 df = df.append(income_main('ch', 'tsunami'), ignore_index=True)
 
 #check results and then send to csv
-code.interact(local=locals())
+# code.interact(local=locals())
 df.to_csv('results/income_ede_results.csv')

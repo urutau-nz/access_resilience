@@ -9,7 +9,6 @@ def main():
 def find_nearest_service(distances, closed_ids, db, context):
     '''takes a distance matrix and returns a matrix of the nearest service
     (of each service) to each origin'''
-    con = db['con']
     #open up the destination table
     dest_df = pd.read_sql("SELECT * FROM destinations", db['con'])
     #remove destinations that are closed

@@ -7,7 +7,7 @@ from config import *
 
 import math
 import os.path
-import osgeo.ogr
+# import osgeo.ogr
 import io
 import shapely
 from geoalchemy2 import Geometry, WKTElement
@@ -35,14 +35,15 @@ def main(state):
     db['con'].close()
 
 
-def query_points(closed_ids, db, context):
+def query_points(closed_ids, db, context, optimise_service=None):
     '''
     query OSRM for distances between origins and destinations
     '''
-    # connect to db
-    cursor = db['con'].cursor()
+    # # connect to db
+    # cursor = db['con'].cursor()
 
     # get list of all origin ids
+    #sql = "SELECT * FROM block"
     sql = "SELECT * FROM block"
     orig_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
 
@@ -59,11 +60,17 @@ def query_points(closed_ids, db, context):
         orig_df = orig_df.set_index('geoid10')
         orig_df.sort_values(by=['geoid10'], inplace=True)
     # get list of destination ids
-    sql = "SELECT * FROM destinations"
+    sql = "SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')"
+    # if not optimise_service:
+    #     sql = "SELECT * FROM ch_destinations"
+    # else:
+    #     sql = "SELECT * FROM destinations WHERE dest_type='{}'".format(optimise_service)
     dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
-
+    #dest_df = gpd.read_file(r'data/dests/chch_dests.csv')
+    #dest_df['id'] = np.arange(0,len(dest_df))
     dest_df = dest_df.loc[~dest_df['id'].isin(closed_ids)]
     dest_df = dest_df.set_index('id')
+    #dest_df = orig_df
     dest_df['lon'] = dest_df.geom.centroid.x
     dest_df['lat'] = dest_df.geom.centroid.y
     # list of origxdest pairs
@@ -72,7 +79,48 @@ def query_points(closed_ids, db, context):
     # df of durations, distances, ids, and co-ordinates
 
     origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
+    #origxdest.to_csv('edge_origin_distances.csv')
     return origxdest
+
+
+def query_supply_points(origin_ids, db, context, optimise_service=None):
+    '''
+    query OSRM for distances between origins and destinations
+    '''
+    # connect to db
+    cursor = db['con'].cursor()
+
+    # get list of all origin ids
+    orig_df = gpd.GeoDataFrame()
+
+    # get list of destination ids
+    sql = "SELECT * FROM destinations WHERE dest_type IN ('medical_clinic', 'primary_school', 'supermarket')"
+    # if not optimise_service:
+    #     sql = "SELECT * FROM ch_destinations"
+    # else:
+    #     sql = "SELECT * FROM destinations WHERE dest_type='{}'".format(optimise_service)
+    #dest_df = gpd.GeoDataFrame.from_postgis(sql, db['con'], geom_col='geom')
+    dest_df = gpd.read_file(r'results/recovery/service_options.shp')
+    #dest_df['id'] = np.arange(0,len(dest_df))
+    dest_df = dest_df.loc[dest_df['id'].isin(origin_ids)]
+    dest_df = dest_df.set_index('id')
+    #dest_df = orig_df
+    orig_df['x'] = dest_df.geometry.centroid.x
+    orig_df['y'] = dest_df.geometry.centroid.y
+
+    dest_df = gpd.GeoDataFrame()
+    dest_df['lon'] = [172.45050,172.66500]
+    dest_df['lat'] = [-43.56613,-43.34904]
+    # list of origxdest pairs
+    origxdest = pd.DataFrame(list(itertools.product(orig_df.index, dest_df.index)), columns = ['id_orig','id_dest'])
+    origxdest['distance'] = None
+    # df of durations, distances, ids, and co-ordinates
+
+    origxdest = execute_table_query(origxdest, orig_df, dest_df, context)
+    #origxdest.to_csv('edge_origin_distances.csv')
+    return origxdest
+
+
 
 def write_to_postgres(df, db, table_name, indices=True):
     ''' quickly write to a postgres database
@@ -138,7 +186,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         orig_ids = range(i[0],i[1])
         for j in orig_ids:
             #now add each dest in the string
-            orig_string += str(orig_df.x[j]) + "," + str(orig_df.y[j]) + ";"
+            orig_string += str(orig_df.x.iloc[j]) + "," + str(orig_df.y.iloc[j]) + ";"
         # make a string of the number of the sources
         source_str = '&sources=' + str(list(range(len(orig_ids))))[1:-1].replace(' ','').replace(',',';')
         # make the string for the destinations
@@ -149,7 +197,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         # append to list of queries
         query_list.append(query_string)
     # # Table Query OSRM in parallel
-    par_frac = 0.9
+    par_frac = 1
 
     #define cpu usage
     num_workers = np.int(mp.cpu_count() * par_frac)

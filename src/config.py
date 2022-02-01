@@ -33,8 +33,8 @@ def cfg_init(state):
     # SQL connection
     db = dict()
     db['passw'] = open('pass.txt', 'r').read().strip('\n')
-    db['host'] = '132.181.102.2'
-    db['port'] = '5001'
+    db['host'] = 'encivmu-tml62'
+    db['port'] = '5002'
     # city information
     context = dict()
     # CHRISTCHURCH
@@ -46,7 +46,7 @@ def cfg_init(state):
         context['country'] = 'nz'
         context['continent'] = 'australia-oceania'
         # url to the osrm routing machine
-        context['osrm_url'] = 'http://localhost:6010'
+        context['osrm_url'] = 'http://localhost:6002'
         context['services'] = ['medical_clinic', 'primary_school', 'supermarket']
     # SEATTLE
     elif state == 'wa':

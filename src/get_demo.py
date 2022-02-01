@@ -6,8 +6,12 @@ def demographic_data(df, db, context):
     if context['country'] == 'nz':
         #open census data for all of nz
         census_data = pd.read_sql("SELECT * FROM census_18", db['con'])
+        census_data = census_data.dropna(subset=['gid'])
+        census_data['gid'] = census_data['gid'].astype(int)
+        census_data['gid'] = census_data['gid'].astype(str)
+
         #select only rows that are common with our meshblocks
-        relevant_demo = census_data.loc[census_data['gid'].isin(df['id_orig'])]
+        relevant_demo = census_data.loc[census_data['gid'].astype(str).isin(df['id_orig'])]
         #format results
         relevant_demo.sort_values(by=['gid'], inplace=True)
         relevant_demo.reset_index(inplace=True, drop=True)

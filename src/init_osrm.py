@@ -15,12 +15,12 @@ def main(sim, state, context):
     continent = context['continent']
     port = context['osrm_url'][-4:]
     transport_mode = 'car' #mode_dict[mode]
-    directory = '/homedirs/man112/osm_data'
+    directory = '/home/mitchell/projects/access_resilience/data/osm'
 
     if sim == True:
-        subprocess.call(['/bin/bash', '/homedirs/man112/monte_christchurch/src/init_osrm_sim.sh', state_name, port, transport_mode, directory, state, continent])
+        subprocess.call(['/bin/bash', 'src/init_osrm_sim.sh', state_name, port, transport_mode, directory, state, continent])
     elif sim == False:
-        subprocess.call(['/bin/bash', '/homedirs/man112/monte_christchurch/src/init_osrm.sh', state_name, port, transport_mode, directory, state, continent])
+        subprocess.call(['/bin/bash', 'src/init_osrm.sh', state_name, port, transport_mode, directory, state, continent])
 
 
 
