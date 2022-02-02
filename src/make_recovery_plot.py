@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 
 os.chdir("results/recovery")
-data = pd.read_csv('recovery_supermarket_total_pop.csv')
-random = pd.read_csv('random_recovery_supermarket_total_pop.csv')
+data = pd.read_csv('new_random_recovery_supermarket_total_pop.csv') #pd.read_csv('recovery_supermarket_total_pop.csv')
+random = pd.read_csv('new_random_recovery_supermarket_total_pop.csv')
 inbetweener = pd.read_csv('new_road_h_recovery_supermarket_total_pop.csv')
 
 data = data[['time', 'iso_supermarket_total_pop', 'ede_supermarket_total_pop']]

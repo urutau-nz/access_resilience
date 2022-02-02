@@ -21,23 +21,33 @@ optimise_service = 'supermarket'
 optimise_demographic = 'total_pop'
 file_path = r'results/recovery/new_random_recovery_{}_{}.csv'.format(optimise_service, optimise_demographic)
 
+start_from_mid = True
 
 db, context = cfg_init(state)
 
 
 def recover():
-    # simulate random hazard event, get list of roads and services that are inoperable
-    road_options, df_services = get_damages(state, hazard_type, optimise_service)
-    # init results df
-    results = init_results()
-    # update results for baseline query @ t=-1, also imports dmeographic data as demo
-    results, demo = bau_query(results)
-    # update results for query at point of hazard (t=0)
-    results = hazard_query(results, demo, road_options, df_services)
-    # init df of options to restore
-    df_options = init_options(df_services, road_options)
-    # greedy optimise
-    results = init_random(df_options, results, demo, road_options)
+    if start_from_mid == False:
+        # simulate random hazard event, get list of roads and services that are inoperable
+        road_options, df_services = get_damages(state, hazard_type, optimise_service)
+        # init results df
+        results = init_results()
+        # update results for baseline query @ t=-1, also imports dmeographic data as demo
+        results, demo = bau_query(results)
+        # update results for query at point of hazard (t=0)
+        results = hazard_query(results, demo, road_options, df_services)
+        # init df of options to restore
+        df_options = init_options(df_services, road_options)
+        # greedy optimise
+        results = init_random(df_options, results, demo, road_options)
+    else:
+        temp_results = init_results()
+        temp_results, demo = bau_query(temp_results)
+        road_options = gpd.read_file('results/recovery/rand_road_options.shp')
+        df_options = pd.read_csv('results/recovery/rand_df_options.csv')
+        results = pd.read_csv('results/recovery/rand_results.csv')
+        results = results.drop(columns=['Unnamed: 0'])
+        results = init_random(df_options, results, demo, road_options)
     # save results
     results.to_csv(file_path)
 
@@ -175,6 +185,10 @@ def init_random(df_options, results, demo, road_options):
         road_options = temp_roads
         if len(df_options) == 100:
             x=1
+            #SAVE RESULTS AND DF_OPTIONS, RUN AGAIN, ROAD_OPTIONS
+            road_options.to_file('results/recovery/rand_road_options.shp')
+            df_options.to_csv('results/recovery/rand_df_options.csv')
+            results.to_csv('results/recovery/rand_results.csv')
     # returns results
     return(results)
 

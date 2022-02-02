@@ -13,7 +13,7 @@ state = 'ch'
 hazard_type = 'liquefaction'
 optimise_service = 'supermarket'
 optimise_demographic = 'total_pop'
-file_path = r'results/recovery/opt_recovery_{}_{}_old.csv'.format(optimise_service, optimise_demographic)
+file_path = r'results/recovery/new_opt_recovery_{}_{}.csv'.format(optimise_service, optimise_demographic)
 
 
 # db, context = cfg_init(state)
@@ -158,7 +158,7 @@ def init_greedy(df_options, results, demo, road_options, db, context):
         time = i + 1
         # loop through all options of a timestep
         for j in tqdm(np.arange(0, len(df_options))): # check each option within a timestep, chose best. j is the index of each option
-            print('ESTIMATED TOTAL TIME: {} HOURS'.format(np.sum(iterations)*9/60**2))
+            print('ESTIMATED TOTAL TIME LEFT: {} HOURS'.format((np.sum(iterations)-time)*5/60**2))
             # check if option is road or service related
             if df_options.iloc[j]['type'] == 'road':
                 # make tempory df of roads to close (closes all except those within cell j)

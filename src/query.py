@@ -197,7 +197,7 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
         # append to list of queries
         query_list.append(query_string)
     # # Table Query OSRM in parallel
-    par_frac = 0.9
+    par_frac = 1
     print('parallel query')
     #define cpu usage
     num_workers = np.int(mp.cpu_count() * par_frac)
@@ -211,6 +211,15 @@ def execute_table_query(origxdest, orig_df, dest_df, context):
     return(origxdest)
 
 def req(query_string):
-    response = requests.get(query_string).json()
+    response = requests_retry_session(retries=100, backoff_factor=0.025).get(query_string).json()
     temp_dist = [item for sublist in response['distances'] for item in sublist]
     return temp_dist
+
+############## Retry Request on Failure ##############
+def requests_retry_session(retries,backoff_factor,status_forcelist=(500, 502, 504),session=None):
+    session = session or requests.Session()
+    retry = Retry(total=retries,read=retries,connect=retries,backoff_factor=backoff_factor,status_forcelist=status_forcelist)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
