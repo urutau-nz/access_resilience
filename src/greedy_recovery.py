@@ -247,6 +247,7 @@ def init_greedy(df_options, results, demo, road_options, db, context):
         df_options['delta_ede'] = 0
         df_options = df_options.reset_index(drop=True)
         road_options = temp_roads
+        results.to_csv(file_path)
 
     # returns results
     return(results)
