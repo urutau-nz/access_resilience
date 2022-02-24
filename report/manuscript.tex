@@ -54,7 +54,7 @@
 
 \begin{frontmatter}
 
-\title{The Resilience of Access to Urban Services: Hazard vulnerability, recovery, \& equity}
+\title{The Underestimated Role of the Transportation Network: Improving Disaster \& Community Resilience}
 
 %% Group authors per affiliation:
 % \author{Elsevier\fnref{myfootnote}}
@@ -78,14 +78,16 @@
 % %
 % Tom M Logan$^{1,2}$\affiliation{The Cluster for Community and Urban Resilience, University of Canterbury, New Zealand}}
 
+
 \begin{abstract}
-To understand and improve community resilience we must be able to evaluate and understand the direct and indirect role of the transportation network.
-This requires moving beyond a fixation on network functionality and towards an approach that can evaluate whether the network is truly serving the community’s needs.
-In this paper, we present such an approach.
-With the understanding that sufficient and equitable access to amenities is key to community resilience we leverage OpenStreetMap data and routing algorithms to simulate road and service closures under a range of hazard scenarios.
-We illustrate this approach in three case studies.
-Under different hazard scenarios, we repeatedly update the network based on simulated damage and restoration options to understand the sufficiency and equity of access before, during, and after a hazard event.
-Ultimately, this information can support planners and policy-makers to better prepare their communities and respond equitably and efficiently when a disaster occurs.
+Improving community resilience relies on our ability to evaluate and understand the direct and indirect role of the transportation network.
+This requires losing our fixation with network functionality in favour of an approach that evaluates whether the network is truly serving the community’s needs.
+In this paper, we present such an approach. 
+With the understanding that sufficient and equitable access to amenities is key to community resilience, we leverage open-source data and routing algorithms to simulate road and service closures under various hazard scenarios.
+Among our methodological contributions is the ability to efficiently modify entire transportation networks to reflect hazard damage and identify isolated communities.
+This makes integrating hazard simulation with access and equity evaluations practicable on a large scale.
+We illustrate this approach in three cities.
+Ultimately, a broader view of the transportation network's role will better support communities prepare for and respond equitably when a disaster occurs.
 \end{abstract}
 
 \begin{keyword}
@@ -114,40 +116,38 @@ Many of these children were still unable to return to school two years later, ca
 Hurricane Katrina in 2005 provides another example. 
 The direct impacts of the event included the closure of many roads and services.
 While roads were reopened promptly after the retreat of the water and clearance of debris, many services, such as supermarkets, did not reopen for many years after the event.
-This impact to the transportation network and distribution of operable supermarkets meant that some poorer residents had to take three buses to their nearest supermarket for more than eight years after the event \cite{Netter_2016-zp}.
+This impact on the transportation network and distribution of operable supermarkets meant that some poorer residents had to take three buses to their nearest supermarket for more than eight years after the event \cite{Netter_2016-zp}.
 % Segway to community resilience?
 Events like these make us question what could have been done to make these communities more resilient.
 
 % Community Resilience
-The resilience of a system is fundamentally related to its capacity to withstand, prepare for, recover from, and adapt or transform following hazards \cite{Bene2012-mx, Meerow2016-definingRes, GillespieMarthaler2019-ak,Cutter2016-xv}.
-Traditionally, resilience is considered through two disparate lenses: community capacity \cite{Cutter2014-lr, Zautra2008-nc} and infrastructure functionality \cite{lin2018empirical, Cutter2014-lr}.
-The former approach classically requires identifying the qualities that a community requires so it can withstand, prepare for, recover from, and transform after a shock \cite{Cutter2010-ee, Cutter2016-xv, Cutter2014-lr, Sherrieb2010-lk}.
-Well-known examples of this community capacity view of resilience are seen within resilience indicators such as DROP \cite{Cutter2008-if}, BRIC \cite{Cutter2014-lr}, and SOVI \cite{Cutter2003-xi}.
-The other view of resilience centers on infrastructure functionality.
-The focus is on buildings, transportation, electricity, and other infrastructure with a primary view to avoid or mitigate damage, and quickly remedy any loss of functionality \cite{Bruneau2003-lk, Barker2013-uf, Curt2018-mm, Guidotti2016-hc, Hosseini2016-ae, Haimes2009-oi}.
-As a result of their work, the resilience function or recovery curve has become a widely used and understood quantification of infrastructure resilience \cite{Bruneau2006-jg, Sharma2018-uh}, with recent work demonstrating how to utilise resilience functions to optimise recovery.
+The resilience of a system is fundamentally related to its capacity to withstand, prepare for, recover from, and adapt or transform following disruptions \cite{Bene2012-mx, Meerow2016-definingRes, GillespieMarthaler2019-ak,Cutter2016-xv}.
+In past, resilience has been considered through two contrasting lenses: community capacity \cite{Cutter2014-lr, Zautra2008-nc} and infrastructure functionality \cite{lin2018empirical, Cutter2014-lr}.
+A ``community capacity'' approach to resilience typically requires identifying the characteristics of a community that enable it to withstand, prepare for, recover from, and transform after a shock \cite{Cutter2010-ee, Cutter2016-xv, Cutter2014-lr, Sherrieb2010-lk}.
+Well-known examples of this approach to resilience are the resilience indicators such as DROP \cite{Cutter2008-if}, BRIC \cite{Cutter2014-lr}, and SOVI \cite{Cutter2003-xi}.
+On the other hand, the ``infrastructure functionality'' approach to resilience focuses on buildings, transportation, electricity, and other infrastructure with an aim to avoid,  mitigate, and quickly remedy any loss of functionality \cite{Bruneau2003-lk, Barker2013-uf, Curt2018-mm, Guidotti2016-hc, Hosseini2016-ae, Haimes2009-oi}.
+It is this approach to resilience that gave rise to the resilience function or recovery curve which has become a widely used and understood quantification of network resilience \cite{Bruneau2006-jg, Sharma2018-uh}, with recent work demonstrating how to utilise resilience functions to optimise recovery.
 While both approaches are critical to our understanding of resilience, they fail to address the question at their interface: 
-how does a community foster the capacities necessary for resilience and how can infrastructure enable these capacities before, during, and after a disruption?
+what is required to foster the capacities necessary for resilience and how can infrastructure enable these capacities in a community before, during, and after a disruption?
 
 % Access
-Critical to fostering community resilience is accessibility to day-to-day services \cite{logan2020reframing}.
-Health care, education, food, emergency service, cultural, and recreational centers are examples of amenities that are critical to the livability, safety, and cohesion of a community \cite{Contreras2017-wn, Dempsey2011-sv, Talen2003-iy, winter1997coordinating, logan2020reframing, unesco-jn}.
-A lack of access to these amenities can transform a short-term disruption into a long-term social disaster, as seen in New Orleans and Indonesia \cite{watt-ht, Netter_2016-zp, Contreras2017-wn}.
-However, in the presence of sufficient and equitable access, communities begin to foster a range of positives capacities such as community cohesion, social capital, and sense of place \cite{Jennings2019-jk, Forrest2001-wz}.
-These qualities, in turn, enhance a community's ability to withstand, prepare, and act following a disruption; thus improving the community's resilience.
+One argument is that equitable access to essential services and amenities is necessary for fostering community resilience \cite{logan2020reframing}.
+Health care, education, food, emergency services, cultural, and recreational centers are examples of amenities that are essential to the livability, safety, and cohesion of a community \cite{Contreras2017-wn, Dempsey2011-sv, Talen2003-iy, winter1997coordinating, logan2020reframing, unesco-jn}.
+Persistent disruption of access to these amenities, a type of secondary stressor, can transform a short-term event into a long-term social disaster \cite{watt-ht, Netter_2016-zp, Contreras2017-wn, Lock2012-ov}.
+However, in the presence of sufficient and equitable access, communities begin to foster a range of positive capacities such as community cohesion, social capital, and sense of place \cite{Jennings2019-jk, Forrest2001-wz}.
+All of these qualities can reduce the severity of other long-term stresses and, in doing so, enhance a community's ability to withstand, prepare, and act following a disruption; thus improving the community's resilience.
 
 
 % This integrates the properties of both infrastructure functionality and community capacity.
 % It does this by quantifying residents accessibility to essential services such as  \cite{logan2019evaluating}.
-Therefore, it is important for us to ensure our communities are designed with access to the services they need.
-However, while some communities have suitable access to amenities, many do not \cite{Logan2021-ineq}.
-Large segments of our communities, in both developed and underdeveloped nations, are living within food deserts, health care deserts, and areas without access to other essential services \cite{Beaulac2009-sf}.
-Because people with better access to resources are reported to have higher resilience \cite{Frazier2013-wd}, in the event of a disaster or disruptive event it is the access poor communities that are disproportionately impacted.
+Although access is important for communities, many do not have sufficient access \cite{Logan2021-ineq}.
+Large segments of our communities, in both developed and underdeveloped nations, live within food deserts, health care deserts, and areas without access to other essential services \cite{Beaulac2009-sf}.
+Because people with better access to resources reportedly have higher resilience \cite{Frazier2013-wd}, in the event of a disaster or disruptive event it is the access poor communities that are disproportionately impacted.
 
-As a result, planners need to consider not just access, but equity in that access \cite{Dempsey2011-sv}.
+As a result, planners need to consider not just access, but equity in that access \cite{Dempsey2011-sv, logan2020reframing}.
 That is, while access is necessary to a resilient community, it is not sufficient: the access itself must also be equitable.
 Equitable access requires that people not only have the same (equal) access, but a level of access appropriate for their unique needs \cite{Lucy1977-dt, Talen1998-mk}.
-This equity of access is a form of distributional justice and is one of the pillars of environmental justice \cite{Low2013-yx}.
+This equity of access is a form of distributional justice and is one of the pillars of environmental justice \cite{Low2013-yx, McDermott2013-wl}.
 
 %transport
 %The transportation network is so integrated into urban living that to make advances in knowledge within the urban environment we must be able to model the transport network and it's impacts.
@@ -162,9 +162,9 @@ The transportation network lays the foundations around which we construct our ci
 Where done well, the transportation layout promotes active transport, vibrancy, safety, better well-being, and of course, equitable access \cite{Jacobs2016-ks}.
 
 %segway into disruptions and risk
-To enable the continuation of community function, the transportation network must be effective before, during, and after a disruptive event.
+To enable the continuation of community function, the transportation network must be effective before and after a disruptive event.
 In the event of a disaster, the restoration of all other lifeline systems depends on the ability to move people and resources to the sites where damage has occurred \cite{Hopkins1991-ok}.
-Therefore, the transportation network is the most important infrastructure lifeline within a city.
+Therefore, the transportation network is arguably the primary infrastructure lifeline within a community.
 In the wake of a disaster, affected residents may struggle to be rescued, while the loss of access through a main arterial link can cause major economic losses for a community \cite{Dalziell2001-un}.
 More generally, disrupted access leads to increases in travel time that impairs the ability of individuals to take part in their daily activities, including commuting; dropping off and picking up children from day-care/school; and shopping.
 For businesses, the impacts can include delayed deliveries and supplies; loss of customers and manpower; and increases in freight costs \cite{Jenelius2012-vp}.
@@ -172,36 +172,36 @@ One example of disrupted access in a community was seen during the COVID-19 pand
 To avoid similar planning failures and unjust recovery efforts, much like that of New Orleans, we must promote considerations of access to services within scenario and resilience planning.
 
 % Niche
-While research has been completed to understand the reliability and resilience of transport networks, current assessments often neglect two things: the needs of the people that the network serves, and the broader objective of the network; which is to allow people to travel between destinations of interest.
+While research has been completed to understand the reliability and resilience of transport networks, current assessments often neglect two things: the wider objective of the network (which is to allow people to travel between destinations of interest) and the variety of needs (and therefore destinations) of the people that the network serves.
 Yet, the transport network is all-but redundant if there are no operable destinations.
-Without considering the operability of destinations (fixation on network functionality) can lead to a distorted understanding of the impacts that a disruption has on access and community function.
+Without considering the operational status of destinations, fixation on the network's functionality can lead to a distorted understanding of the impacts that a disruption has on access and community function.
+Therefore, to better understand the resilience of a transportation network and its impacts on a community we must reconsider and broaden the approach to measure that resilience.
+
 % Previous work on disruption measures on access/transport
-The work to date on the resilience of access or transport networks often deals in the following:
+Traditionally, the resilience of a transportation network is defined as the ability of the system to maintain performance or reduce impact following a disruption. Additionally, the system must be able to fully recover or adapt to the conditions \cite{Mason2021-bq, Zhang2015-xz, Aghababaei2021-qp}.
+A recent review of research estimating trip resilience found that approaches tend to focus on the network's performance before, during, and after a disruption using qualitative, quantitative, simulation, or a mixture of these approaches \cite{Aghababaei2021-qp}.
+For example, many studies have introduced approaches to increase resilience by optimising the restoration process through resource allocation \cite{Sun2020-ln, Li2020-nq, Ozdamar2014-fh, Tuzun_Aksu2014-gq} while others consider resilience in terms of evacuation capacity \cite{Tuzun_Aksu2014-gq, Cova1997-vl}.
 
-\begin{enumerate}
-    \item The delegation of resources after a disaster to optimise the restoration process \cite{Sun2020-ln, Li2020-nq, Ozdamar2014-fh, Tuzun_Aksu2014-gq}
-    \item High-level impact assessments of major transport links or very localised impact assessments on small complex networks \cite{Dalziell2001-un, Khademi2015-jq, Tuzun_Aksu2014-gq, Nicholson2007-zc, Jenelius2012-vp, Chang2001-bq, Bono2011-dk, Sohn2006-vg, Taylor2012-jw}
-    \item Transport demand models for evacuation \cite{Tuzun_Aksu2014-gq, Cova1997-vl}
-\end{enumerate}
+Many studies consider the impacts of transport systems at a very high level (i.e., only considering state highways or primary routes) whilst others analyse the full network but use boundaries at a relatively small scale \cite{Dalziell2001-un, Khademi2015-jq, Tuzun_Aksu2014-gq, Nicholson2007-zc, Jenelius2012-vp, Chang2001-bq, Bono2011-dk, Sohn2006-vg, Taylor2012-jw, El-Rashidy2014-ut}.
+Additionally, some studies analyse the vulnerability and criticality of single links or nodes within the network \cite{Zhang2016-vq, Balijepalli2014-zh}.
+One such quantitative approach evaluated the resilience of transport networks with varying typologies which determined that networks with a higher average degree and cyclicity (network redundancy) were typically more resilient \cite{Zhang2015-xz}.
 
-Very few studies evaluate the impact of a network disruption at a city-wide level, let alone the impact on a communities ability to function and recover.
-Within one recent study, we see the distribution of access evaluated over time as a city's supermarkets and service stations are made inoperable and slowly restored based on real-time data in the wake of a disaster \cite{logan2020reframing}.
-However, this study only evaluates access change by removing and adding operable facilities as they are closed and reopened respectively, it does not consider changes to the transport network.
-Another study evaluated the isolation potential of residents after a disruptive event by modelling changes to the transport network \cite{Bono2011-dk}. 
-However, this study did not quantify access to different services, only identified where potentially isolated residents are. Therefore, it does not evaluate the resilience of a community or its access network.
+One relatively understudied aspect of transport resilience are evaluations of city-wide impacts following disruptions. In particular, few studies consider the impact on a community's ability to function and recover in a manner that incorporates the operational status of destinations. 
+One recent study evaluates how community-wide access changes over the course of a hurricane as the supermarkets and service stations are closed and subsequently reopened \cite{logan2020reframing};
+However, that study only considers facility closures and does not consider changes to the transport network.
+Another study evaluated the isolation potential of residents after a disruptive event by modelling changes to the transport network \cite{Bono2011-dk}; 
+However, that study did not quantify access to different services, it focused on identifying regions vulnerable to isolation.
 
 % Contribution
-%% Isolation
-The main contribution of this paper is to improve the understanding of the role that the transportation network plays in community resilience and to explore an approach to evaluate the direct and indirect impacts following a disaster.
-Specifically, measuring the change in a community's ability to function through the change in accessibility and associated equity after a sudden disruption in the transport network and distribution of operable services.
-We do this by evaluating the performance and equity of access to health care, education, and supermarket facilities within a city under a business as usual scenario as per \textcite{Logan2021-ineq}.
-This is done before simulating a hazard scenario on the city which identifies a set of transport network segments and services that are no longer usable.
-These direct hazard impacts are then used within the re-evaluation of the city's access performance and equity.
-This allows for the evaluation of the vulnerability and resilience of a city's access.
-Moreover, it allows for a better understanding of the residents within a community that will be affected by the changes in their surrounding networks.
-We demonstrate this approach under different hazard types within three cities; (1) Seattle (WA, USA), due to liquefaction damage from a simulated earthquake event; (2) Houston (TX, USA), due to inundation damage from a simulated hurricane event; and (3), a multi-hazard event in Christchurch (New Zealand) due to inundation and liquefaction damage from a simulated earthquake-induced tsunami event.
-The three case studies provided are used to display, (1) the simulated change in access distribution and associated equity across different demographic groups with inclusions of uncertainty; (2) areas and demographic groups prone to isolation from different service types; and (3), the ability to use multi-criteria optimisation to aid decision-makers in the process of coordinating an equitable restoration program.
-An interactive app demonstrating the process and our results are provided here: [Link redacted for blind review]
+To address these gaps, \textbf{our objective is to enhance the understanding of the role of the transportation network in community resilience.} 
+We achieve this by developing and demonstrating an approach to evaluate the direct and indirect impacts of a disruption on a transportation network and the community's ability to access services.
+The approach is based on the ability to modify the transport network for an entire city to reflect potential damage (direct impacts), in a manner that is computationally efficient and therefore practicable to integrate into repeated hazard simulation.
+To measure the indirect impacts, we evaluate how a community's access, and the equity of that access, changes as a result of the transportation network's disruption and closures to essential services.
+This enables a better and broader understanding of how and where residents will be affected by potential hazards.
+
+To demonstrate this approach with different types of hazards (earthquake liquefaction, pluvial flooding, and tsunami) we consider three cities: Seattle (WA, USA), Houston (TX, USA), and Christchurch (New Zealand).
+These case studies are used to demonstrate (1) how access and access equity changes across different demographic groups, incorporating uncertainty; (2) regions prone to isolation and their demographics composition; and (3), the potential for multi-criteria optimisation to aid decision-makers in the process of coordinating an equitable restoration program.
+An interactive dashboard demonstrating the process and our results is provided at \url{https://urbanintelligence.co.nz/project/access-resilience/}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,21 +210,28 @@ An interactive app demonstrating the process and our results are provided here: 
 
 \section{Methodology}
 Our goal is to evaluate the indirect impacts of a natural hazard on a community's transportation network.
-Specifically, evaluate resident's access to essential services over time by quantifying the access before, during, and after a disruptive event.
+Specifically, evaluate residents' access to essential services over time by quantifying the access before and after a disruptive event.
 The first step in this process is to quantify a city’s access to services under normal circumstances.
 We do this by evaluating the network distance between a set of origin-destination (O-D) pairs \cite{logan2019evaluating,Logan2021-ineq}. 
-Then, critical to understanding the impact of a hazard and the role of the transportation network and one of the major differences with previous work, is to model how this access changes during and after a natural hazard event.
+Then, critical to understanding the impact of a hazard and the role of the transportation network and one of the major differences with previous work, is to model how this access changes after a natural hazard event.
 We achieve this by simulating damage to both the transport network and buildings before running large scale O-D queries on the updated networks. 
 Once we have determined the new distribution of access between residents, we then evaluate the equity and change in equity \cite{sheriff2020health, Logan2021-ineq}.
 Finally, we look to network recovery with the use of isolation and equity of access to drive a multi-criteria optimisation process that can guide recovery plans. 
 This guide to prioritising network restoration is determined by developing different network recovery pathways and evaluating the access, isolation, and equity throughout each one.
 We can then create a prioritised ranking of roads and services to restore based on a multi-criteria greedy optimisation function which we then compare against a random recovery function. 
 We elaborate on these steps in the following subsections.
-Our code is available on GitHub: [redacted for blind review].
+Our code is available on GitHub: [this code and repository will be made available on publication].
 
 \subsection{Data Inputs and Processing}
-Our approach requires the following data to be input: Origins (e.g., the location of the centroid of each neighbourhood block), destinations (the key services in the community, e.g., supermarkets), population and demographic data (Census), the transport network, and a hazard scenario.
-We describe these in the following sections and list our case studies' data sources in Appendix A, \autoref{tab: data}.
+Our approach requires the following data to be input: 
+\begin{itemize}
+\item Origins (e.g., the location of the centroid of each neighbourhood block)
+\item Destinations (the key services in the community, e.g., supermarkets), 
+\item Population and demographic data (Census)
+\item The transport network
+\item Hazard scenario(s) with spatially-explicit severity.
+\end{itemize}
+We describe these in the following sections and detail our data sources in Appendix A, \autoref{tab: data}.
 
 \subsubsection{Origin and Destination Pairs}
 To quantify access within a city we require the locations of origins and destinations of interest.
@@ -234,12 +241,12 @@ Larger resolutions, i.e. census tracts, are computationally simpler but can unde
 We recommend using neighbourhood block centroids as origins. 
 For computational efficiency, we limit origins to all census blocks, within the city, with at least one resident.
 
-The destinations are the locations of services and/or amenities around and near the city. 
-The selection of what type of destinations are included should be based on the needs and values of the community and, in practice, should be selected based on engagement with local governments and communities \cite{Simonsen2012-bj}.
+The destinations are the locations of services and/or amenities around and near the city that residents require a transportation link between.
+Determining the types of destinations to include should be based on the needs and values of the community and, in practice, should be selected based on engagement with local governments and communities \cite{Simonsen2012-bj}.
 Destinations within a 5km buffer of the city boundary are included to ensure that residents on the edge of the city were not arbitrarily misrepresented.
-Care is necessary when sourcing the destination locations as errors (not uncommon in commercial, government, and VGI data \cite{Wong2017-it}) may result in a misrepresentation of the vulnerabilities within a community which, in turn, may lead to ineffective or even maladaptive interventions. 
+Care is necessary when sourcing the destination locations as errors (not uncommon in commercial, government, and volunteered geographic information data \cite{Wong2017-it}) may result in a misrepresentation of the vulnerabilities within a community which, in turn, may lead to ineffective or even maladaptive interventions. 
 
-Within our three case studies, we use three destination types: supermarkets, health care facilities, and primary schools.
+For illustrative purposes, our three case studies use three destination types (but we reiterate that in practice this should be determined in partnership with the community): supermarkets, health care facilities, and primary schools.
 The destination data was checked by visual comparisons with Google Maps and corrected as necessary to add or remove destinations.
 The boundaries used are defined as the county boundaries in the USA (King and Harris counties for Seattle and Houston respectively) and the Christchurch City Council boundaries for Christchurch, New Zealand.
 
@@ -248,18 +255,17 @@ Once we have identified the set of origins and destinations we create a joint se
 \subsubsection{Transport Network Data}
 To calculate the network distance between the origin and destination pairs, we require the transport network.
 We extract the transportation network from OpenStreetMap \cite{OpenStreetMap}.
-However, when the shapefile is required for the exposure assessment we extract the same network using OSMNX \cite{Boeing2017-nf}. 
+When the transport network needs to be modified based on hazard exposure, we also download the same network from OSMNX \cite{Boeing2017-nf}. 
 Consistent with the destinations, we extract the transport network that is within a 5km buffer of the city boundary to ensure routes are not restricted to find the nearest service.
-We then use the Open Source Routing Machine (OSRM) to query the network distance between all origins and destinations \cite{luxen-vetter-2011}. 
 
 \subsubsection{Hazard Data}
-To evaluate the impacts of a hazard on accessibility, we last require information about a hazard. 
-The data must be able to spatially intersect with the road network and destination facilities in order to model damage.
+To evaluate the impacts of a hazard on accessibility, we require information about a hazard. 
+The data must be able to spatially intersect with the road network and destination facilities in order to estimate damage.
 Ideally, to achieve this the data will have a spatially varying hazard intensity with which we can calculate both exposure and vulnerability.
 
 The hazard types within our study were available in different formats, which we adapted our approach to utilise.
-Earthquake liquefaction data is available in shapefile form with unique polygons indicating areas of high to low levels of liquefaction susceptibility. 
-Tsunami and flooding inundation data is often available in raster format which enables us to determine the inundation depths at each road segment and destination.
+Earthquake liquefaction data is available where polygons (in shapefile format) indicate areas of high to low levels of liquefaction susceptibility. 
+Tsunami and flooding inundation data is often available geostatistically (in raster format) which enables us to determine the inundation depths at each road segment and destination.
 As this paper analyses liquefaction, flooding, and tsunami hazards, the approach is generalizable between these and other hazards.
 
 \subsection{Measuring Access}
@@ -268,8 +274,11 @@ Therefore, when discussing and measuring ``access'' we refer to proximity (dista
 
 To represent this access, we first calculate the network distance between every origin and every destination.
 While other distance measures such as Euclidean or Manhattan have been used in the past, this approach requires network distance to be used so that changes to the network will impact the distance.
-We calculate the network distance using an OSRM driving profile; this means that footpaths, footbridges, and smaller access routes are not considered.
-Although pedestrian links will be used in the aftermath of a hazard, restoration and emergency services generally require vehicle access.
+We use the Open Source Routing Machine (OSRM) to query the network distance between all origins and destinations \cite{luxen-vetter-2011}. 
+Throughout this process we use a OSRM driving profile as outlined in \cite{logan2019evaluating}; this means that footpaths, footbridges, and smaller access routes are not considered.
+Although pedestrian links will be used in the aftermath of a hazard, restoration and emergency services generally require vehicle access - however, this can be changed as required with the OSRM routing parameters.
+OSRM currently has the ability to estimate distance and duration for walking, cycling, and driving.
+Other routing tools (such as OpenTripPlanner) have the ability to estimate public transit trip distance, which requires information on the transit schedule (GTFS) - however, work remains before public transit can be fully incorporated into this approach, an issue compounded given it is unlikely to function entirely as scheduled given the occurrence of a hazard.
 
 The resulting distances are used to determine the distance to the nearest destination (of each type) for every origin.
 This gives information on how distance to services is distributed throughout a region.
@@ -297,12 +306,13 @@ The Kolm-Pollak EDE is also separable, meaning we can compare different subgroup
 To achieve this we compare the EDE of different sociodemographic subgroups and evaluate how they change as a result of a hazard.
 
 To evaluate equity in our case studies, we use the \textit{`Inequalipy'} python package to calculate the EDE for the total population and ethnic groups from each city \cite{Logan2021-ineq}.
+Note that while our case study compares access between ethnic groups, equity is not limited to ethnicity and this approach can be used to examine differences between any recorded groups.
 To calculate the EDE we require an aversion parameter, this represents the populations' aversion to inequality within the distribution.
 We use an aversion parameter of -0.5 which is consistent with values commonly used by the US Census Bureau \cite{Jones2000-xv}.
 For the Kolm-Pollak EDE, the more negative the parameter, the more averse the user is to inequality.
 Note that in practice, the aversion parameter should be determined through utility elicitation with the stakeholders or subjected to sensitivity tests.
 
-\subsection{Operability of Destinations and Road Segments}
+\subsection{Operational Status of Destinations and Road Segments}
 To understand how access changes due to a hazard event, we must first understand the direct impacts of the hazard on the city.
 We consider two conditions for access: there must be, (1) a transport route that is clear of debris and damage between an origin and destination point, and (2) the destination facility must be operational.
 To evaluate these two conditions we simulated a hazard event by spatially overlaying the hazard map on the transport network and facilities.
@@ -315,10 +325,10 @@ For each simulation, we update the road network and destinations to represent th
 We then assess the subsequent distribution of access.
 One of the major advances we present in this paper is closing road segments due to hazards and then recomputing the distances throughout the network.
 This is repeated thousands of times to capture uncertainty and is only recently computationally feasible.
-We provide code on the following GitHub link: [Redacted for blind review].
+We provide code on the following GitHub link: [this code and repository will be made available on publication].
 
 Within the three case studies, we examined the impacts on access due to hurricane inundation, liquefaction, and a joint earthquake and tsunami event.
-Under each hazard scenario, we determine the exposure and vulnerability of each asset to determine its operability.
+Under each hazard scenario, we determine the exposure and vulnerability of each asset to determine its operational status.
 To understand the vulnerability, we use fragility functions from recent literature \cite{suppasri2013building, williams2020tsunami, Wang_Chaofeng2021-jc, lin2018empirical, Pregnolato2017-gn, Nofal2020-ti}.
 These fragility functions describe the probability of a hazard causing infrastructure to reach and exceed a given damage state \cite{charvet2014empirical,lin2018empirical}.
 Damage states can vary between research; however, generally, they fall into 2-5 categories ranging from minor damage to structural collapse \cite{lin2018empirical,suppasri2013building}. 
@@ -328,7 +338,7 @@ In the next three sections, we discuss how we evaluated the direct impacts of th
 
 \subsubsection{Hurricane Inundation Impacts}
 Under a simulated hurricane inundation event, we assigned a road segment's exposure value as the highest inundation depth recorded along the given road section.
-The operability of that road was then determined solely from the inundation value, more specifically, we classed a road as impassable if the inundation depth is above 300mm.
+The operational status of that road was then determined solely from the inundation value, more specifically, we classed a road as impassable if the inundation depth is above 300mm.
 This is the average depth that is deemed impassable for common cars \cite{Pregnolato2017-gn}.
 
 Building vulnerability, based on maximum inundation depth, is categorized as no, low, medium, and high exposure \cite{Nofal2020-ti}.
@@ -355,16 +365,25 @@ If an asset is exposed by different levels to the two hazards, then the higher e
 
 \subsection{Post-Hazard Recovery}
 We now turn to the recovery aspect of asset and infrastructure resilience.
-Where the information is available after an actual event, we can guide the infrastructure recovery for optimal access restoration.
+Where information is available after an event, we can guide the infrastructure recovery for optimal access restoration.
 Additionally, modelling the recovery following a simulated event could be used in emergency management training to build intuition. 
 As a proof of concept, we use a greedy optimisation approach and test every possible recovery option at each time step.
-The objective is to prioritise the order of road and service restorations as to minimise the number of isolated residents and maximise equitable access to the rest of the community.
-That is, we test every possible option and select the one that restores access to the most isolated residents, if no residents are able to be returned access, we select the option that provides the best increase in the EDE for the entire population.
+The objective is to prioritise the order of road and service restorations as to minimise the number of isolated residents followed by maximising equitable access for the rest of the community.
+This is achieved by testing every possible option and selecting the one that restores access to the largest number of isolated residents.
+In the instance that the number of isolated residents can not be reduced, we select the option that provides the largest decrease in the EDE distance for the entire population.
 
-We illustrate this approach with a liquefaction event in Christchurch, New Zealand.
-To demonstrate the necessity of such evidence-based decision-making aid, we compare it against a random restoration.
-Due to the computational demands of this task, we set possible restorations options as any given service which has been closed, and any given set of road sections.
-The set of road sections are determined by dividing the city into equal-area grids, approximately 2km by 2km.
+We illustrate this approach with a liquefaction event in Christchurch, New Zealand, where we optimise based on the isolation status and access to supermarkets for the whole population.
+To demonstrate the necessity of such a evidence-based decision-making aid, we compare the greedy optimised function against two other restoration methods: Random restoration and a hierarchy-based approach.
+The hierarchy-based recovery process differs from the greedy optimisation and the random recovery to reflect a realistic post-disaster decision-making process for both roads and services as per \textcite{Wellington_Region_Emergency_Management_Office_Wellington_Lifelines_Group2013-ou}.
+This approach works on the basis that the restoration of a supermarket will be prioritised if it can be stocked by its distribution center.
+Access to distribution centers is determined by the presence of an operable route between the service and either state-highway to the north and south of the city.
+Following the prioritisation of services, an array of transport links will be opened based on network hierarchy.
+That is, the grid with the largest length of restorable major arterial roads will be prioritised over minor arterial roads and so on to local and private roads.
+
+To initialise the recovery process we evaluate the access during a business-as-usual state before inflicting a disruption event where a known, and consistent across recovery models, set of roads and services are deemed inoperable.
+This set of roads and services are then reopened one at a time until the previous business-as-usual state has been reached.
+Due to the computational demands of this task, the set of road sections are determined by dividing the city into 2km by 2km grids.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -372,16 +391,16 @@ The set of road sections are determined by dividing the city into equal-area gri
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Case Studies}
-To demonstrate the approach for evaluating the resilience of a community's access, we consider three cities, Seattle (WA, USA), Houston (TX, USA), and Christchurch (New Zealand).
-The relevant properties of which can be seen within \autoref{tab: BAU_Results}.
-These cities were selected based on the data available (including hazard maps) and their accessibility under normal circumstances.
-Under normal circumstances, when considering access and equity of access, Seattle has relatively good access whereas Houston is much worse \cite{Logan2021-ineq}; Christchurch has relatively average access, in comparison.
+To demonstrate the approach for evaluating the resilience of a community's access, we consider three cities, Seattle (WA, USA), Houston (TX, USA), and Christchurch (New Zealand)  \autoref{tab: BAU_Results}.
+These cities were selected to demonstrate the approach in locations of various population size, land area, accessibility, inequality, and hazard susceptibility.
+In addition, these cities include both an accessible city and a poorly accessible city, under normal conditions (Seattle and Houston respectively) \cite{Logan2021-ineq}; Christchurch has relatively average access, in comparison.
 
 The purpose of this study is not to directly compare the performance of these three cities, but to illustrate scenarios where this approach can be used.
 Therefore, we evaluate each city under a different hazard scenario and service type.
 
 In the following section, we outline the results from each of the three cities before discussing the results in the succeeding section.
-An interactive web app has been provided to show the results of all three cities: [Link redacted for blind review]
+While this study only reviews the accessibility to food, education, and health care, other destination or amenity types can easily be used within the methodology outlined.
+An interactive web app has been provided to show the results of Christchurch and Seattle: \url{https://urbanintelligence.co.nz/project/access-resilience/}
 %\href{interactive website}{https://apps.urutau.co.nz/access_resilience/}. 
 
 \begin{table}[h!]
@@ -423,7 +442,7 @@ Thus, within this case study, we simulate a liquefaction event on the city to an
 
 \begin{figure*}[h]
     \includegraphics[width=1\linewidth]{report/fig/wa_fig.jpg}
-    \caption{Evaluation of Seattle (WA, USA) access to primary schools under a liquefaction hazard scenario. \autoref{fig:seattle_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the level of access for the remaining population. \autoref{fig:seattle_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:seattle_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty. An interactive app to explore our results is available here: [Link redacted for blind review]}
+    \caption{Evaluation of Seattle (WA, USA) access to primary schools under a liquefaction hazard scenario. \autoref{fig:seattle_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the level of access for the remaining population. \autoref{fig:seattle_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:seattle_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty. An interactive app to explore our results is available here: \url{https://urbanintelligence.co.nz/project/access-resilience/}}
     \label{fig:seattle_fig}
 \end{figure*}
 
@@ -452,7 +471,7 @@ Being the fourth most populous city within the US, Houston is a hub for Texas an
 
 \begin{figure*}[h]
     \includegraphics[width=1\linewidth]{report/fig/tx_fig.jpg}
-    \caption{Evaluation of Houston (TX, USA) access to medical clinics under a hurricane inundation hazard scenario. \autoref{fig:houston_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the remaining populations level of access. \autoref{fig:houston_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:houston_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty. An interactive app to explore our results is available here: [Link redacted for blind review]}
+    \caption{Evaluation of Houston (TX, USA) access to medical clinics under a hurricane inundation hazard scenario. \autoref{fig:houston_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the remaining populations level of access. \autoref{fig:houston_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:houston_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty.}
     \label{fig:houston_fig}
 \end{figure*}
 
@@ -476,7 +495,7 @@ It is, therefore, possible to have multiple hazards occur within similar time pe
 
 Current efforts to evaluate hazard exposure and subsequent risk often fail to address the concept of equality and can propose potentially maladaptive risk treatment measures by solely focusing on individual hazards or scenarios. 
 Therefore, where possible we should consider not only single hazard events but also multi-hazard events.
-Given the data availability for Christchurch, we have the opportunity to analyse the impacts to access under a multi-hazard scenario for an approximately 1 in 2500-year earthquake-induced tsunami event causing coastal inundation and liquefaction. 
+Given the data available for Christchurch, we have the opportunity to analyse the impacts to access under a multi-hazard scenario for an approximately 1 in 2500-year earthquake-induced tsunami event causing coastal inundation and liquefaction. 
 This is completed by utilising data from \cite{Mueller2019-hk, Tonkin_taylor2020-es}.
 
 Utilising a multi-hazard approach, although simplified for a proof of concept \cite{Gehl_undated-rx}, we can analyse the impacts and test possible interventions within each single hazard scenario and multi-hazard scenario.
@@ -485,7 +504,7 @@ The ability to test interventions across a range of scenarios limits the possibi
 \subsubsection{Christchurch: Earthquake Induced Tsunami}
 \begin{figure*}[h!]
     \includegraphics[width=1\linewidth]{report/fig/ch_fig.jpg}
-    \caption{Evaluation of Christchurch (New Zealand) access to supermarkets under a multi-hazard scenario. \autoref{fig:chch_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the remaining populations level of access. \autoref{fig:chch_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:chch_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty. An interactive app to explore our results is available here: [Link redacted for blind review]}
+    \caption{Evaluation of Christchurch (New Zealand) access to supermarkets under a multi-hazard scenario. \autoref{fig:chch_fig}(a) shows a randomly selected hazard and access simulation, depicting inoperable roads \& services, isolated regions, and the remaining population's level of access. \autoref{fig:chch_fig}(b) shows a breakdown of ethnicity's that have been isolated. \autoref{fig:chch_fig}(c) shows the distribution of access from 10,000 simulations with associated uncertainty. An interactive app to explore our results is available here: \url{https://urbanintelligence.co.nz/project/access-resilience/}}
     \label{fig:chch_fig}
 \end{figure*}
 
@@ -501,25 +520,31 @@ Finally, when considering isolated residents, much like the other case studies, 
 \subsection{Optimising Recovery Efforts}
 % previous planning and recovery failures
 While natural hazards don't discriminate, recovery efforts often do.
-This is seen through various planning failures and disaster recovery efforts around the globe.
+This is seen throughout various planning failures and disaster recovery efforts around the globe.
 Examples such as the previously mentioned Hurricane Katrina and Pokeno scenario are further evidence of this.
 This provides motivation to find better methods that guide decision-makers to consider equity throughout the recovery process.
 
 \begin{figure*}[b!]
-    \includegraphics[width=0.95\linewidth]{report/fig/recovery_fig.jpg}
-    \caption{Recovery curves for Christchurch (New Zealand) based on a simulated multi-hazard event. \autoref{fig:recovery_fig}(a) shows how the number of isolated residents can be recovered optimally. \autoref{fig:recovery_fig}(b) shows how the equitable access (EDE) can be simultaneously recovered optimally.  An interactive app to explore our results is available here: [Link redacted for blind review]}
+    \includegraphics[width=0.95\linewidth]{report/fig/recovery_fig.png}
+    \caption{Recovery curves for Christchurch (New Zealand) based on a simulated liquefaction event. \autoref{fig:recovery_fig}(a) shows how the number of isolated residents can be recovered optimally. \autoref{fig:recovery_fig}(b) shows how equitable access (EDE) can be recovered simultaneously with the reduction of isolated residents.}
     \label{fig:recovery_fig}
 \end{figure*}
 
-Using the approach provided within this paper to assess the indirect impacts of a hazard on the transportation network we can also test different pathways of recovery and their outcomes.
-We demonstrate this in \autoref{fig:recovery_fig} where we take a randomly selected simulation result from the Christchurch liquefaction event and optimise the order of infrastructure (road segments and services) restoration.
-We optimise for the maximum decrease in isolated residents followed by the maximum decrease in the EDE distance to an operable supermarket.
-This creates a recovery curve that can be compared with a randomised recovery process.
-\autoref{fig:recovery_fig} clearly shows the improvement of using a data-driven approach.
-Had this been a real disaster, the implications of the randomised recovery compared to the optimised recovery would be huge.
-It should be noted that this prioritises the order of restoration actions based on the outcome of the EDE.
-In practice, this approach should be coupled with the experience of decision-makers who can assess the financial cost and time of each restoration action as well as their optimised outcomes.
-This approach can be used with real-time disaster data if needed and it is also flexible to be used with different services and demographics to ensure justice within the recovery process.
+Using the approach provided within this paper to assess the indirect impacts of a disruption within the transportation network we can also test different pathways of recovery and their outcomes.
+We demonstrate this in \autoref{fig:recovery_fig} where we take a randomly selected hazard simulation impact from the Christchurch liquefaction event and optimise the order of infrastructure (road segments and services) restoration.
+Within this figure, we optimise for the maximum decrease in isolated residents followed by the maximum decrease in the EDE distance to an operable supermarket.
+We achieve this by prioritising the order of restoration actions based on the outcome of the EDE and isolated residents count.
+This is indicated by the blue line in both \autoref{fig:recovery_fig} (A) and (B).
+However, in some recovery efforts, a lack of resources, poor governance, or poor planning can cause long-term recoveries to seem worse than random with little to no consideration for equitable decision-making.
+To represent the possible contrast between a data-driven approach and a seemingly random recovery process we have paired our optimised approach with a randomised recovery function, seen in grey.
+Additionally, to understand how these approaches compare with a commonly used recovery method based on the road network hierarchy, a third curve has been added in green.
+
+\autoref{fig:recovery_fig} clearly shows the benefit of using a data-driven and isolation-first approach.
+Had this been a real disaster, the hierarchy-based approach brings quicker travel times to non-isolated residents while failing to address the large number of residents cut-off from supermarkets.
+This approach leaves approximately 20,000 residents without access to food whilst the data-driven approach has restored access and better proximity for the entire population.
+In practice, this data-driven and isolation first approach should be coupled with the experience of decision-makers who can assess the financial cost and time of each restoration action as well as their optimised outcomes.
+This approach can be used with real-time disaster data if needed and it is also flexible to be used with different services and demographics to ensure equity within the recovery process.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DISCUSSION
@@ -531,7 +556,7 @@ The objective of this paper is to enhance the understanding of the role of the t
 Crucial to this is improving our understanding of the indirect influences, especially in situations with disruptions.
 % explore approach to evaluate direct and indirect impacts from a disruption in the transportation network
 % enhance understanding of the critical role that the transportation network plays in community resilience
-To achieve this, this paper outlines an approach that enables transport and urban planners to evaluate the direct and indirect impacts caused by a disruption within the transportation network.
+To achieve this, this paper outlines an approach that enables transport planners, urban planners, and emergency managers to evaluate the direct and indirect impacts caused by a disruption within the transportation network.
 % The ability to evaluate these indirect impacts enhances our understanding of the critical yet, occasionally underestimated role that the transportation network plays in community resilience.
 
 % P2: Proposed (fine resolution) approach lets us firstly explore the direct impacts
@@ -612,8 +637,9 @@ We are in the process of implementing this tool to be suitable for community eng
 % recovery optimisation
 % avoiding past failures of poor planning and recovery
 Finally, this approach can be used to avoid past planning and recovery failures like those described earlier in Pokeno and New Orleans.
-Instead, we can use this approach to guide equitable recovery.
-The enhancement that this restoration approach can make to community function is evident within \autoref{fig:recovery_fig}.
+Instead, we can use this approach to guide an equitable recovery.
+The enhancement that this restoration approach can make to community function is evident within \autoref{fig:recovery_fig} where we show that hierarchy-based approaches are effective in improving proximity for non-isolated residents, however, fail to adequately address residents who are cut-off immediately after the event.
+This is contrasted with an optimisation-based approach that first seeks to restore access to all residents and then optimises for access. 
 Future work could couple this method with real-time outage data to provide a prioritised list of restoration actions that will maximise the number of people that access is restored equitably.
 
 
@@ -621,25 +647,33 @@ Future work could couple this method with real-time outage data to provide a pri
 % CONCLUSION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%This paper demonstrates the transportation network’s role in community resilience is more critical than generally understood. We do this by quantifying the often ignored indirect impacts that the transport network has after a disruption. This is seen through the results of residents isolated from various critical amenities and the ability for disrupted transport networks to disproportionately impact sub-groups of the population such as minority ethnicities. We have reinforced this within the conclusion.
+
+
 \section{Conclusion}
 % The contribution of this paper is...
-With 70\% of the world's population projected to live in cities by 2050, understanding community resilience is critical to the successful future of our urban environments.
-Without adequate and equitable access to resources and opportunities communities will struggle to adapt to and recover from the physical pressures being placed upon them.
-Within this paper, we further the understanding of community resilience by providing an approach that highlights the importance of the transportation network.
-We do this by evaluating the direct and indirect impacts on communities after a disruption in the transportation network.
+The accessibility provided by the transportation network is an essential part of daily life.
+It enables people to access their education, employment, and daily needs as well as allowing emergency or other services to come to them. 
+The implications of poor or inequitable access are evident even before a disaster strikes, with longer commute times being associated with reduced mental and physical health, and lower time resource to spend on other needs such as socialising or exercising.
+The role of the transportation network in providing access is most evident after a disruption when access is lost or significantly reduced.
+
+In this paper, we presented an approach that looks beyond just the functionality of the transportation network and instead seeks to determine whether a community's needs are being served in terms of access to services and amenities.
+We do this by evaluating the direct and, often overlooked, indirect impacts on communities after a disruption in the transportation network.
 Specifically, we consider how access and equity of access to key services changes over the time frame of a disaster.
-This approach is demonstrated in three case studies where it was seen that the initially equal access communities can become disparate after a hazard, disproportionately impacting minority or vulnerable populations.
-Demonstrating the approach’s functionality with the three case studies determined that cities with robust and equitable initial access are likely to be more resilient to the shock imposed by a natural hazard. 
+The underestimated importance of the transportation network is demonstrated through our case study results where we estimate that hundreds of thousands of residents could be isolated from critical amenities after a disruption in the network.
+Additionally, our three case studies demonstrate that initially equal access communities can become disparate after a hazard, often with disproportionate impacts on minority or vulnerable populations.
+By demonstrating the approach’s functionality within the three case studies, we determined that cities with robust and equitable initial access are likely to be more resilient to natural hazards. 
+Therefore, in the context of increased and changing hazards, we must strive for intelligent urban design that prioritises the equity and quality of business-as-usual access, to not only improve our sustainability and public health, but also strengthen our community's resilience. 
 
 Our approach leverages the recent advances in data availability and computational power which makes repeatedly simulating damage and disruption, at the link level, practicable.
 This ultimately enables transport \& urban planners, and emergency managers to consider the wider implications of the transport network.
 That is, we can consider how disruptions to roads and destinations will impact residents spatially throughout the city.
 
 There are exciting opportunities for the future progress of this approach by incorporating interdependent infrastructure analysis.
-This approach will open up new avenues to aid with equitable and effective climate change adaptation within our cities.
+This approach will enable new avenues to aid with equitable and effective climate change adaptation within our cities.
 It can do this by improving the measurement of indirect impacts and the understanding of the effects that they will have on community resilience.
 Improvements in access will begin to increase the health, well-being, safety, and livability of our cities.
-Therefore, we urge transport planners to integrate measures of access and equity to key services into their future work to ensure that community resilience is being enhanced.
+Therefore, we urge transport planners and emergency managers to broaden their view of the network and its resilience to also include and consider equitable access to key services.
 
 % \backmatter
 
@@ -659,7 +693,7 @@ Therefore, we urge transport planners to integrate measures of access and equity
 % \subsection{}
 \noindent Code is available at [Link redacted for blind review] %\url{https://github.com/urutau-nz/access_resilience}.
 
-\noindent An interactive app to explore results is available at [Link redacted for blind review]
+\noindent An interactive app to explore the results of Christchurch (NZ) and Seattle (USA) is available at: \url{https://urbanintelligence.co.nz/project/access-resilience/}
 
 
 \clearpage
