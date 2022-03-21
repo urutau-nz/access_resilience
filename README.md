@@ -1,45 +1,16 @@
-# Monte Christchurch
-## ENCN493 Research Project: TLO-01
-###### Dai Kiddle, Mitchell Anderson, Tom Logan (Supervisor)
+# The Underestimated Role of the Transportation Network: Improving Disaster & Community Resilience
 
-*A framework to evaluate access distributions of cities to essential
-services/destinations with imposed natural hazards.*
+![Graphical Abstract](https://urbanintelligence.co.nz/wp-content/uploads/2022/03/graphical_abstract-1024x409.jpg)
 
-Using Monte Carlo Simulation, this approach allows urban planners to evaluate access resilience within a community.
-This enables the identification of (1) potentially vulnerable communities or demographic groups, and
-(2) critical amenity nodes or transport links. This will also aid (1) vulnerability assessments, (2) pre and post hazard investment prioritisation
+###### Cite as: M. J. Anderson, D. A. F. Kiddle, & T. M. Logan (2022). The Underestimated Role of the Transportation Network: Improving Disaster & Community Resilience. Transportation Research Part D: Transport and Environment.
 
-<<<<<<< HEAD
-###### Data Inputs:
+[Journal Publication - TBD]()
 
-(1) Block Level Demographic Data
-=======
-Simulation determines which roads and destinations are exposed in initiialise_hazard.py and drop_raods.py
-it then closes destinations and certain routes based on a two damage state fragility curve process
-outlined in the close_destinations.py and drop_roads.py files.
-program.py will run this simulation and save results to sql
+[Blog Post](https://urbanintelligence.co.nz/research/the-resilience-of-access/)
 
-Running compile_results.py will then format the big nearest_matrix to be ready for plotting
->>>>>>> 6dcfc583694a33c172dcd1a12325a23854258b71
+[Interactive Results](https://projects.urbanintelligence.co.nz/access-resilience/)
 
-(2) OSM Transport Network
 
-(3) Amenity Network
+While numerous studies have been completed to understand the reliability and resilience of transport networks, current assessments often neglect two things: the wider objective of the network (which is to allow people to travel between destinations of interest) and the variety of needs (and therefore destinations) of the people that the network serves. Yet, the transport network is all-but redundant if there are no operable destinations. Without considering the operational status of destinations, fixation on the network’s functionality can lead to a distorted understanding of the impacts that a disruption has on access and community function. Therefore, to better understand the resilience of a transportation network and its impacts on a community we must reconsider and broaden the approach to measure that resilience.
 
-(4) Hazard Data (Inundation/flooding: Raster, Liquefaction: Shapefile)
 
-###### Method:
-
-(1) Quantify access performance and equity in a business as usual case
-
-(2) Simulate a hazard event. Based on some fragilities, 'close' road segments and services
-
-(3) Re-model the transport and service network
-
-(4) Quantify the new level of access
-
-(5) Repeat (3) & (4) n times for Monte Carlo
-
-(6) Quantify uncertainty and mean of post hazard access
-
-(7) Visualize (ECDF & Maps)
