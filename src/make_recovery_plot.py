@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import os 
 import pandas as pd
 import numpy as np
+from pylab import rcParams
+rcParams['figure.figsize'] = 7, 5
+rcParams['pdf.fonttype'] = 42
+
 
 os.chdir("results/recovery")
 data = pd.read_csv('new_opt_recovery_supermarket_total_pop.csv')
@@ -31,18 +35,18 @@ fig, axes = plt.subplots(2, 1, sharex=True)
 fig.subplots_adjust(hspace=.35)
 
 
-axes[0].plot(time, iso_random, label='Randomised recovery', color='darkgrey')
-axes[0].plot(time, iso_between, label='Informed recovery', color='olive')
-axes[0].plot(time, iso_data, label='Data-driven recovery', color='royalblue')
+axes[0].plot(time, iso_random, label='Randomised recovery', color='#646464')
+axes[0].plot(time, iso_between, label='Informed recovery', color='#54E848')
+axes[0].plot(time, iso_data, label='Data-driven recovery', color='#197BB0')
 axes[0].invert_yaxis()
 #axes[0].set_ylabel('# Isolated Residents')
 axes[0].grid(axis='x')
 
 
 
-axes[1].plot(time, ede_random, label='Randomised recovery', color='darkgrey')
-axes[1].plot(time, ede_between, label='Informed recovery', color='olive')
-axes[1].plot(time, ede_data,label='Data-driven recovery', color='royalblue')
+axes[1].plot(time, ede_random, label='Randomised recovery', color='#646464')
+axes[1].plot(time, ede_between, label='Informed recovery', color='#54E848')
+axes[1].plot(time, ede_data,label='Data-driven recovery', color='#197BB0')
 axes[1].invert_yaxis()
 #axes[1].set_ylabel('EDE Distance to nearest supermarket')
 axes[1].grid(axis='x')
@@ -52,4 +56,4 @@ axes[1].grid(axis='x')
 
 #plt.legend()
 #plt.xlabel('# Restoration Actions Taken')
-plt.savefig(r'/home/mitchell/projects/access_resilience/results/new_recovery_curve', dpi=1000)
+plt.savefig(r'/home/mitchell/projects/access_resilience/results/new_recovery_curve.pdf', dpi=1000)
